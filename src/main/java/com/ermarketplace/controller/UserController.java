@@ -20,7 +20,7 @@ import com.ermarketplace.model.User;
 import com.ermarketplace.repository.UserRepository;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/ERMarketPlace/user")
 public class UserController {
 
 	@Autowired
