@@ -33,6 +33,9 @@ public class Client {
 
 	@NotBlank
 	private String clienttype;
+	
+	@NotBlank
+	private String contactno;
 
 	private Long country;
 
@@ -52,7 +55,7 @@ public class Client {
 	// blob
 	private String comments;
 
-	private String status;
+	private String status="ACTIVE";
 
 	private Long revid;
 
@@ -64,7 +67,13 @@ public class Client {
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	@LastModifiedDate
-	private Date UPDATEDAT;	
+	private Date UPDATEDAT;
+	
+	@NotBlank
+	private String createdby;
+	
+	@NotBlank
+	private String lastupdatedby;
 	
 	public Long getClientid() {
 		return clientid;
@@ -80,6 +89,14 @@ public class Client {
 
 	public void setClientname(String clientname) {
 		this.clientname = clientname;
+	}
+
+	public String getContactno() {
+		return contactno;
+	}
+
+	public void setContactno(String contactno) {
+		this.contactno = contactno;
 	}
 
 	public String getClienttype() {
@@ -184,5 +201,21 @@ public class Client {
 
 	public void setUPDATEDAT(Date uPDATEDAT) {
 		UPDATEDAT = uPDATEDAT;
+	}
+
+	public String getCreatedby() {
+		return createdby;
+	}
+
+	public void setCreatedby(String createdby) {
+		this.createdby = createdby;
+	}
+
+	public String getLastupdatedby() {
+		return lastupdatedby;
+	}
+
+	public void setLastupdatedby(String lastupdatedby) {
+		this.lastupdatedby = lastupdatedby;
 	}	
 }
