@@ -37,7 +37,7 @@ public class Client {
 	@NotBlank
 	private String contactno;
 
-	private Long country;
+	private String country;
 
 	private Long city;
 
@@ -55,7 +55,7 @@ public class Client {
 	// blob
 	private String comments;
 
-	private String status="ACTIVE";
+	private String status;
 
 	private Long revid;
 
@@ -106,12 +106,12 @@ public class Client {
 	public void setClienttype(String clienttype) {
 		this.clienttype = clienttype;
 	}
-
-	public Long getCountry() {
+	
+	public String getCountry() {
 		return country;
 	}
 
-	public void setCountry(Long country) {
+	public void setCountry(String country) {
 		this.country = country;
 	}
 
