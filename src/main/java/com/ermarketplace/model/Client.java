@@ -39,7 +39,7 @@ public class Client {
 
 	private String country;
 
-	private Long city;
+	private String city;
 
 	private String addressline1;
 
@@ -114,12 +114,12 @@ public class Client {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-
-	public Long getCity() {
+	
+	public String getCity() {
 		return city;
 	}
 
-	public void setCity(Long city) {
+	public void setCity(String city) {
 		this.city = city;
 	}
 

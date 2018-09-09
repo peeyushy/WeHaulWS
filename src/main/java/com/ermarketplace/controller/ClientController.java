@@ -47,8 +47,21 @@ public class ClientController {
 				.orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
 
 		client.setClientname(companyDetails.getClientname());
-		client.setClienttype(companyDetails.getClienttype());
-
+		//once created client type can't be updated
+		//client.setClienttype(companyDetails.getClienttype());
+		client.setAddressline1(companyDetails.getAddressline1());
+		client.setAddressline2(companyDetails.getAddressline2());
+		client.setCity(companyDetails.getCity());
+		client.setComments(companyDetails.getComments());
+		client.setContactno(companyDetails.getContactno());
+		client.setCountry(companyDetails.getCountry());
+		client.setLastupdatedby(companyDetails.getLastupdatedby());
+		client.setPostcode(companyDetails.getPostcode());
+		//need to check how to auto increment this on each update
+		client.setRevid(companyDetails.getRevid());
+		client.setStatus(companyDetails.getStatus());
+		client.setWebsite(companyDetails.getWebsite());
+				
 		Client updatedClient = clientRepository.save(client);
 		return updatedClient;
 	}
