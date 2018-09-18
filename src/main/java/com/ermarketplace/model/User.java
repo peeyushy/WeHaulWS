@@ -63,7 +63,13 @@ public class User {
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	@LastModifiedDate
-	private Date UPDATEDAT;	
+	private Date UPDATEDAT;
+	
+	@NotBlank
+	private String createdby;
+	
+	@NotBlank
+	private String lastupdatedby;
 	
 	public Long getUserid() {
 		return userid;
@@ -167,5 +173,21 @@ public class User {
 
 	public void setUPDATEDAT(Date uPDATEDAT) {
 		UPDATEDAT = uPDATEDAT;
+	}
+
+	public String getCreatedby() {
+		return createdby;
+	}
+
+	public void setCreatedby(String createdby) {
+		this.createdby = createdby;
+	}
+
+	public String getLastupdatedby() {
+		return lastupdatedby;
+	}
+
+	public void setLastupdatedby(String lastupdatedby) {
+		this.lastupdatedby = lastupdatedby;
 	}	
 }
