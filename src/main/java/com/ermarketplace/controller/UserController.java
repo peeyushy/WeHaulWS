@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,9 @@ public class UserController {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@GetMapping("/all")
 	public List<User> getAllUsers() {
@@ -33,6 +37,7 @@ public class UserController {
 
 	@PostMapping("/create")
 	public User createUser(@Valid @RequestBody User user) {
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		return userRepository.save(user);
 	}
 
@@ -60,8 +65,8 @@ public class UserController {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
 		user.setName(userDetails.getName());
-		user.setUsername(userDetails.getUsername());
-		user.setPassword(userDetails.getPassword());
+		user.setUsername(userDetails.getUsername());		
+		user.setPassword(bCryptPasswordEncoder.encode(userDetails.getPassword()));		
 		user.setEmail(userDetails.getEmail());
 		user.setAvatar(userDetails.getAvatar());		
 		user.setContactno(userDetails.getContactno());

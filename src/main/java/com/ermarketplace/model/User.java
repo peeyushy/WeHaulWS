@@ -53,6 +53,7 @@ public class User {
 
 	private String avatar;
 
+	@NotBlank
 	private String status;
 	
 	@Column(nullable = false, updatable = false)
