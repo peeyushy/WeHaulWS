@@ -1,5 +1,6 @@
 package com.ermarketplace.model;
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -8,6 +9,10 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,10 +30,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = { "createdAt", "updatedAt" }, allowGetters = true)
 public class User {
-	@Id	
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userid;
-	
+
 	@NotNull
 	private Long clientid;
 
@@ -43,9 +48,6 @@ public class User {
 
 	@NotBlank
 	private String email;
-	
-	@NotBlank
-	private String usertype;
 
 	private String contactno;
 
@@ -55,7 +57,11 @@ public class User {
 
 	@NotBlank
 	private String status;
-	
+
+	@OneToOne
+	@JoinTable(name = "T_USERS_ROLES", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "userid"), inverseJoinColumns = @JoinColumn(name = "roleid", referencedColumnName = "roleid"))
+	private Role role;
+
 	@Column(nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	@CreatedDate
@@ -65,13 +71,13 @@ public class User {
 	@Temporal(TemporalType.TIMESTAMP)
 	@LastModifiedDate
 	private Date UPDATEDAT;
-	
+
 	@NotBlank
 	private String createdby;
-	
+
 	@NotBlank
 	private String lastupdatedby;
-	
+
 	public Long getUserid() {
 		return userid;
 	}
@@ -118,16 +124,8 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}	
-
-	public String getUsertype() {
-		return usertype;
 	}
-
-	public void setUsertype(String usertype) {
-		this.usertype = usertype;
-	}
-
+	
 	public String getContactno() {
 		return contactno;
 	}
@@ -158,6 +156,14 @@ public class User {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	public Date getCREATEDAT() {
@@ -190,5 +196,5 @@ public class User {
 
 	public void setLastupdatedby(String lastupdatedby) {
 		this.lastupdatedby = lastupdatedby;
-	}	
+	}
 }

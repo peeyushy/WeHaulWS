@@ -1,5 +1,6 @@
 package com.ermarketplace.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ermarketplace.exception.ResourceNotFoundException;
 import com.ermarketplace.model.User;
+import com.ermarketplace.repository.RoleRepository;
 import com.ermarketplace.repository.UserRepository;
 
 @RestController
@@ -30,6 +32,9 @@ public class UserController {
 	@Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+	@Autowired
+	RoleRepository roleRepository;
+
 	@GetMapping("/all")
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
@@ -38,6 +43,8 @@ public class UserController {
 	@PostMapping("/create")
 	public User createUser(@Valid @RequestBody User user) {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		//need to get this dynamic from UI TO-DO
+		//user.setRole(roleRepository.findRoleByRolename("USER"));
 		return userRepository.save(user);
 	}
 
