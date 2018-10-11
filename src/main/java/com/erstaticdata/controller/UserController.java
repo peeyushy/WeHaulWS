@@ -1,6 +1,5 @@
-package com.ermarketplace.controller;
+package com.erstaticdata.controller;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -17,20 +16,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ermarketplace.exception.ResourceNotFoundException;
-import com.ermarketplace.model.User;
-import com.ermarketplace.repository.RoleRepository;
-import com.ermarketplace.repository.UserRepository;
+import com.erstaticdata.exception.ResourceNotFoundException;
+import com.erstaticdata.model.Client;
+import com.erstaticdata.model.User;
+import com.erstaticdata.repository.ClientRepository;
+import com.erstaticdata.repository.RoleRepository;
+import com.erstaticdata.repository.UserRepository;
 
 @RestController
-@RequestMapping("/ERMarketPlace/user")
+@RequestMapping("/ERStaticData/user")
 public class UserController {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Autowired
 	RoleRepository roleRepository;
@@ -43,43 +44,42 @@ public class UserController {
 	@PostMapping("/create")
 	public User createUser(@Valid @RequestBody User user) {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		//need to get this dynamic from UI TO-DO
-		//user.setRole(roleRepository.findRoleByRolename("USER"));
 		return userRepository.save(user);
 	}
 
 	@GetMapping("/id/{id}")
 	public User getUserById(@PathVariable(value = "id") Long userId) {
-		return userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-	}
-	
-	@GetMapping("/client/id/{clientid}")
-	public List<User> getUserByClientId(@PathVariable(value = "clientid") Long clientid) {
-		return userRepository.findUsersByclientid(clientid);
-	}
-	
+		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+	}	
+
 	@GetMapping("/username/{username}")
 	public User getUserByUserName(@PathVariable(value = "username") String username) {
 		return userRepository.findUserByusername(username);
 	}
 
+	@GetMapping("/adminusername/{username}")
+	public User getAdminOnlyUserByUserName(@PathVariable(value = "username") String username) {
+		return userRepository.findAdminOnlyUserByusername(username);
+	}
+
 	@PutMapping("/id/{id}")
-	public User updateUser(@PathVariable(value = "id") Long userId,
-			@Valid @RequestBody User userDetails) {
+	public User updateUser(@PathVariable(value = "id") Long userId, @Valid @RequestBody User userDetails) {
 
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
 		user.setName(userDetails.getName());
-		user.setUsername(userDetails.getUsername());		
-		user.setPassword(bCryptPasswordEncoder.encode(userDetails.getPassword()));		
+		user.setUsername(userDetails.getUsername());
+		user.setPassword(bCryptPasswordEncoder.encode(userDetails.getPassword()));
 		user.setEmail(userDetails.getEmail());
-		user.setAvatar(userDetails.getAvatar());		
+		user.setAvatar(userDetails.getAvatar());
 		user.setContactno(userDetails.getContactno());
 		user.setNotificationtype(userDetails.getNotificationtype());
-		user.setStatus(userDetails.getStatus());		
-		
+		user.setStatus(userDetails.getStatus());
+		// set rev on client
+		Client client = user.getClient();
+		client.setRevid(client.getRevid() + 1);
+		user.setClient(client);
 		User updatedUser = userRepository.save(user);
 		return updatedUser;
 	}

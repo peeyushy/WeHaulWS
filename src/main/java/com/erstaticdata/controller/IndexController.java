@@ -1,4 +1,4 @@
-package com.ermarketplace.controller;
+package com.erstaticdata.controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value={"", "/", "ERMarketPlace"})
+@RequestMapping(value={"", "/", "ERStaticData"})
 public class IndexController {
 
     @GetMapping
     public String sayHello() {
-        return "Hello and Welcome ERMarketPlace.";
+        return "Hello and Welcome ERStaticData.";
     }
 }

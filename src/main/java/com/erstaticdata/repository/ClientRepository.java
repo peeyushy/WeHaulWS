@@ -1,11 +1,11 @@
-package com.ermarketplace.repository;
+package com.erstaticdata.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.ermarketplace.model.Client;
+import com.erstaticdata.model.Client;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {

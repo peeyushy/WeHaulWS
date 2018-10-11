@@ -1,4 +1,4 @@
-package com.ermarketplace.controller;
+package com.erstaticdata.controller;
 
 import java.util.List;
 
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ermarketplace.exception.ResourceNotFoundException;
-import com.ermarketplace.model.Role;
-import com.ermarketplace.model.User;
-import com.ermarketplace.repository.RoleRepository;
+import com.erstaticdata.exception.ResourceNotFoundException;
+import com.erstaticdata.model.Role;
+import com.erstaticdata.model.User;
+import com.erstaticdata.repository.RoleRepository;
 
 @RestController
-@RequestMapping("/ERMarketPlace/role")
+@RequestMapping("/ERStaticData/role")
 public class RoleController {
 
 	@Autowired

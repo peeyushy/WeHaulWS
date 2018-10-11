@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.emptyride</groupId>
-	<artifactId>ERMarketPlace</artifactId>
+	<artifactId>ERStaticData</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>ERMarketPlace</name>
+	<name>ERStaticData</name>
 	<description>Rest API for emptyride Application</description>
 
 	<parent>
