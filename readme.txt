@@ -9,3 +9,9 @@ double click - > C:\setup\hsqldb-2.4.1\bin\runManagerSwing
 4. Kill tomcat running within spring boot
 netstat -ano | find "8080"
 taskkill /F /PID 2516
+
+master data setup
+1. add admin user
+2. add vehicle types
+3. add load types
+4. add roles

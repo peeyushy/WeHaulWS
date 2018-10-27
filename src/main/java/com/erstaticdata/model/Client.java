@@ -9,6 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,6 +28,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import constants.AppConstants;
 
 @Entity
 @Table(name = "T_CLIENTS")
@@ -41,8 +46,9 @@ public class Client implements Serializable{
 	@NotBlank
 	private String clientname;
 
-	@NotBlank
-	private String clienttype;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private AppConstants.ClientType clienttype;
 
 	@NotBlank
 	private String contactno;
@@ -65,8 +71,9 @@ public class Client implements Serializable{
 	// blob
 	private String comments;
 
-	@NotBlank
-	private String status;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private AppConstants.Status status;
 
 	private int revid;
 
@@ -138,11 +145,11 @@ public class Client implements Serializable{
 		this.contactno = contactno;
 	}
 
-	public String getClienttype() {
+	public AppConstants.ClientType getClienttype() {
 		return clienttype;
 	}
 
-	public void setClienttype(String clienttype) {
+	public void setClienttype(AppConstants.ClientType clienttype) {
 		this.clienttype = clienttype;
 	}
 
@@ -210,11 +217,11 @@ public class Client implements Serializable{
 		this.comments = comments;
 	}
 
-	public String getStatus() {
+	public AppConstants.Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(AppConstants.Status status) {
 		this.status = status;
 	}
 

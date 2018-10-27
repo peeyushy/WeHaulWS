@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.erstaticdata.model.Client;
 
+import constants.AppConstants.ClientType;
+
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
-	List<Client> findByclienttype(String clienttype);
+	List<Client> findByclienttype(ClientType clientType);
 }

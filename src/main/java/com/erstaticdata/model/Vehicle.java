@@ -1,8 +1,11 @@
 package com.erstaticdata.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -13,7 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -25,55 +28,45 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import constants.AppConstants;
 
 @Entity
-@Table(name = "T_USERS")
+@Table(name = "T_VEHICLES")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = { "createdAt", "updatedAt" }, allowGetters = true)
-public class User implements Serializable{
+public class Vehicle implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userid;
+	private Long vid;
 
 	@NotBlank
-	private String name;
+	private String regno;
+	
+	@OneToOne
+    @JoinColumn(name="vtypeid")
+	private VehicleType vtype;
 
-	@NotBlank
-	private String username;
-
-	@NotBlank
-	private String password;
-
-	@NotBlank
-	private String email;
-
-	private String contactno;
-
-	private String notificationtype;
+	@ManyToMany	
+	@JoinTable(name="T_VEHICLE_LOADTYPE", 
+    joinColumns=@JoinColumn(name="VID"),
+    inverseJoinColumns=@JoinColumn(name="LTYPEID"))	
+	private List<LoadType> ltype = new ArrayList<>();
 
 	private String avatar;
+
+	private int opcost;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private AppConstants.Status status;
 
 	@NotNull
-	@OneToOne
-	@JoinTable(name = "T_USERS_ROLES", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "userid"), inverseJoinColumns = @JoinColumn(name = "roleid", referencedColumnName = "roleid"))
-	private Role role;
-	
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "clientid", referencedColumnName = "clientid")
-	@JsonBackReference
-	private Client client;
+	private Long clientid;
 
 	@Column(nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -89,129 +82,180 @@ public class User implements Serializable{
 	private String createdby;
 
 	@NotBlank
-	private String lastupdatedby;	
+	private String lastupdatedby;
 
-	public Long getUserid() {
-		return userid;
+	/**
+	 * @return the vid
+	 */
+	public Long getVid() {
+		return vid;
 	}
 
-	public void setUserid(Long userid) {
-		this.userid = userid;
-	}
-	
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
+	/**
+	 * @param vid the vid to set
+	 */
+	public void setVid(Long vid) {
+		this.vid = vid;
 	}
 
-	public String getPassword() {
-		return password;
+	/**
+	 * @return the regno
+	 */
+	public String getRegno() {
+		return regno;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	/**
+	 * @param regno the regno to set
+	 */
+	public void setRegno(String regno) {
+		this.regno = regno;
 	}
 
-	public String getName() {
-		return name;
+	/**
+	 * @return the vtype
+	 */
+	public VehicleType getVtype() {
+		return vtype;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	/**
+	 * @param vtype the vtype to set
+	 */
+	public void setVtype(VehicleType vtype) {
+		this.vtype = vtype;
 	}
 
-	public String getEmail() {
-		return email;
+	/**
+	 * @return the ltype
+	 */
+	public List<LoadType> getLtype() {
+		return ltype;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	/**
+	 * @param ltype the ltype to set
+	 */
+	public void setLtype(List<LoadType> ltype) {
+		this.ltype = ltype;
 	}
 
-	public String getContactno() {
-		return contactno;
-	}
-
-	public void setContactno(String contactno) {
-		this.contactno = contactno;
-	}
-
-	public String getNotificationtype() {
-		return notificationtype;
-	}
-
-	public void setNotificationtype(String notificationtype) {
-		this.notificationtype = notificationtype;
-	}
-
+	/**
+	 * @return the avatar
+	 */
 	public String getAvatar() {
 		return avatar;
 	}
 
+	/**
+	 * @param avatar the avatar to set
+	 */
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
 
+	/**
+	 * @return the opcost
+	 */
+	public int getOpcost() {
+		return opcost;
+	}
+
+	/**
+	 * @param opcost the opcost to set
+	 */
+	public void setOpcost(int opcost) {
+		this.opcost = opcost;
+	}
+
+	/**
+	 * @return the status
+	 */
 	public AppConstants.Status getStatus() {
 		return status;
 	}
 
+	/**
+	 * @param status the status to set
+	 */
 	public void setStatus(AppConstants.Status status) {
 		this.status = status;
 	}
 
-	public Role getRole() {
-		return role;
+	
+	/**
+	 * @return the clientid
+	 */
+	public Long getClientid() {
+		return clientid;
 	}
 
-	public void setRole(Role role) {
-		this.role = role;
+	/**
+	 * @param clientid the clientid to set
+	 */
+	public void setClientid(Long clientid) {
+		this.clientid = clientid;
 	}
 
+	/**
+	 * @return the cREATEDAT
+	 */
 	public Date getCREATEDAT() {
 		return CREATEDAT;
 	}
 
+	/**
+	 * @param cREATEDAT the cREATEDAT to set
+	 */
 	public void setCREATEDAT(Date cREATEDAT) {
 		CREATEDAT = cREATEDAT;
 	}
 
+	/**
+	 * @return the uPDATEDAT
+	 */
 	public Date getUPDATEDAT() {
 		return UPDATEDAT;
 	}
 
+	/**
+	 * @param uPDATEDAT the uPDATEDAT to set
+	 */
 	public void setUPDATEDAT(Date uPDATEDAT) {
 		UPDATEDAT = uPDATEDAT;
 	}
 
+	/**
+	 * @return the createdby
+	 */
 	public String getCreatedby() {
 		return createdby;
 	}
 
+	/**
+	 * @param createdby the createdby to set
+	 */
 	public void setCreatedby(String createdby) {
 		this.createdby = createdby;
 	}
 
+	/**
+	 * @return the lastupdatedby
+	 */
 	public String getLastupdatedby() {
 		return lastupdatedby;
 	}
 
+	/**
+	 * @param lastupdatedby the lastupdatedby to set
+	 */
 	public void setLastupdatedby(String lastupdatedby) {
 		this.lastupdatedby = lastupdatedby;
 	}
 
-	public Client getClient() {
-		return client;
-	}
-
-	public void setClient(Client client) {
-		this.client = client;
-	}
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -221,22 +265,21 @@ public class User implements Serializable{
 		result = prime * result + ((CREATEDAT == null) ? 0 : CREATEDAT.hashCode());
 		result = prime * result + ((UPDATEDAT == null) ? 0 : UPDATEDAT.hashCode());
 		result = prime * result + ((avatar == null) ? 0 : avatar.hashCode());
-		result = prime * result + ((client == null) ? 0 : client.hashCode());
-		result = prime * result + ((contactno == null) ? 0 : contactno.hashCode());
+		result = prime * result + ((clientid == null) ? 0 : clientid.hashCode());
 		result = prime * result + ((createdby == null) ? 0 : createdby.hashCode());
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((lastupdatedby == null) ? 0 : lastupdatedby.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((notificationtype == null) ? 0 : notificationtype.hashCode());
-		result = prime * result + ((password == null) ? 0 : password.hashCode());
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((ltype == null) ? 0 : ltype.hashCode());
+		result = prime * result + opcost;
+		result = prime * result + ((regno == null) ? 0 : regno.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result + ((userid == null) ? 0 : userid.hashCode());
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + ((vid == null) ? 0 : vid.hashCode());
+		result = prime * result + ((vtype == null) ? 0 : vtype.hashCode());
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -245,9 +288,9 @@ public class User implements Serializable{
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof User))
+		if (!(obj instanceof Vehicle))
 			return false;
-		User other = (User) obj;
+		Vehicle other = (Vehicle) obj;
 		if (CREATEDAT == null) {
 			if (other.CREATEDAT != null)
 				return false;
@@ -263,66 +306,59 @@ public class User implements Serializable{
 				return false;
 		} else if (!avatar.equals(other.avatar))
 			return false;
-		if (client == null) {
-			if (other.client != null)
+		if (clientid == null) {
+			if (other.clientid != null)
 				return false;
-		} else if (!client.equals(other.client))
-			return false;
-		if (contactno == null) {
-			if (other.contactno != null)
-				return false;
-		} else if (!contactno.equals(other.contactno))
+		} else if (!clientid.equals(other.clientid))
 			return false;
 		if (createdby == null) {
 			if (other.createdby != null)
 				return false;
 		} else if (!createdby.equals(other.createdby))
 			return false;
-		if (email == null) {
-			if (other.email != null)
-				return false;
-		} else if (!email.equals(other.email))
-			return false;
 		if (lastupdatedby == null) {
 			if (other.lastupdatedby != null)
 				return false;
 		} else if (!lastupdatedby.equals(other.lastupdatedby))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (ltype == null) {
+			if (other.ltype != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!ltype.equals(other.ltype))
 			return false;
-		if (notificationtype == null) {
-			if (other.notificationtype != null)
-				return false;
-		} else if (!notificationtype.equals(other.notificationtype))
+		if (opcost != other.opcost)
 			return false;
-		if (password == null) {
-			if (other.password != null)
+		if (regno == null) {
+			if (other.regno != null)
 				return false;
-		} else if (!password.equals(other.password))
+		} else if (!regno.equals(other.regno))
 			return false;
-		if (role == null) {
-			if (other.role != null)
-				return false;
-		} else if (!role.equals(other.role))
+		if (status != other.status)
 			return false;
-		if (status == null) {
-			if (other.status != null)
+		if (vid == null) {
+			if (other.vid != null)
 				return false;
-		} else if (!status.equals(other.status))
+		} else if (!vid.equals(other.vid))
 			return false;
-		if (userid == null) {
-			if (other.userid != null)
+		if (vtype == null) {
+			if (other.vtype != null)
 				return false;
-		} else if (!userid.equals(other.userid))
-			return false;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
+		} else if (!vtype.equals(other.vtype))
 			return false;
 		return true;
-	}		
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Vehicle [vid=" + vid + ", regno=" + regno + ", vtype=" + vtype + ", ltype=" + ltype + ", avatar="
+				+ avatar + ", opcost=" + opcost + ", status=" + status + ", client=" + clientid + ", CREATEDAT="
+				+ CREATEDAT + ", UPDATEDAT=" + UPDATEDAT + ", createdby=" + createdby + ", lastupdatedby="
+				+ lastupdatedby + "]";
+	}
+
 }

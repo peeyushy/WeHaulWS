@@ -22,6 +22,9 @@ import com.erstaticdata.model.User;
 import com.erstaticdata.repository.ClientRepository;
 import com.erstaticdata.repository.UserRepository;
 
+import constants.AppConstants;
+import constants.AppConstants.Status;
+
 @RestController
 @RequestMapping("/ERStaticData/client")
 public class ClientController {
@@ -49,7 +52,7 @@ public class ClientController {
 	}
 
 	@GetMapping("/type/{clienttype}")
-	public List<Client> getClientByType(@PathVariable(value = "clienttype") String clientType) {
+	public List<Client> getClientByType(@PathVariable(value = "clienttype") AppConstants.ClientType clientType) {
 		return clientRepository.findByclienttype(clientType);
 	}
 
@@ -73,9 +76,9 @@ public class ClientController {
 		client.setWebsite(companyDetails.getWebsite());
 		client.setRevid(companyDetails.getRevid() + 1);
 		client.setStatus(companyDetails.getStatus());
-		if (companyDetails.getStatus().equalsIgnoreCase("DISABLED")) {
+		if (companyDetails.getStatus() == Status.DISABLED) {
 			for (User user : client.getUsers()) {
-				user.setStatus("DISABLED");
+				user.setStatus(Status.DISABLED);
 				users.add(user);
 			}
 			client.getUsers().clear();
