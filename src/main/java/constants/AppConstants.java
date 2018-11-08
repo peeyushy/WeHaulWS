@@ -2,7 +2,7 @@ package constants;
 
 import java.io.Serializable;
 
-public class AppConstants implements Serializable{
+public class AppConstants implements Serializable {
 	/**
 	 * 
 	 */
@@ -14,5 +14,9 @@ public class AppConstants implements Serializable{
 
 	public enum ClientType {
 		A, S, T
+	};
+
+	public enum LoadStatus {
+		ACTIVE, DISABLED, EXPIRED
 	};
 }
