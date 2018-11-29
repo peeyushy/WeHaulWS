@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.erstaticdata.exception.ResourceNotFoundException;
 import com.erstaticdata.model.Vehicle;
+import com.erstaticdata.repository.ClientRepository;
 import com.erstaticdata.repository.VehicleRepository;
 
 @RestController
@@ -25,6 +26,9 @@ public class VehicleController {
 
 	@Autowired
 	VehicleRepository vehicleRepository;
+	
+	@Autowired
+	ClientRepository clientRepository;
 
 	@GetMapping("/all")
 	public List<Vehicle> getAllVehicles() {
@@ -42,8 +46,13 @@ public class VehicleController {
 	}
 	
 	@GetMapping("/clientid/{cid}")
-	public List<Vehicle> getVehicleByclientid(@PathVariable(value = "cid") Long cid) {
-		return vehicleRepository.findVehicleByclientid(cid);
+	public List<Vehicle> getVehicleByclient(@PathVariable(value = "cid") Long cid) {		
+		return vehicleRepository.findVehicleByclient(clientRepository.findById(cid).get());
+	}
+	
+	@GetMapping("/loadid/{lid}")
+	public List<Vehicle> getVehicleByLoadid(@PathVariable(value = "lid") Long lid) {
+		return vehicleRepository.getVehicleByLoadId(lid);
 	}
 
 	@PutMapping("/id/{vid}")
@@ -55,7 +64,7 @@ public class VehicleController {
 		vehicle.setVtype(vehicleDetails.getVtype());
 		vehicle.setLtype(vehicleDetails.getLtype());
 		vehicle.setOpcost(vehicleDetails.getOpcost());
-		vehicle.setAvatar(vehicleDetails.getAvatar());
+		vehicle.setVehicleavatar(vehicleDetails.getVehicleavatar());
 		vehicle.setStatus(vehicleDetails.getStatus());
 
 		return vehicleRepository.save(vehicle);

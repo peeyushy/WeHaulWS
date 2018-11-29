@@ -96,6 +96,14 @@ public class Client implements Serializable{
 	@JsonManagedReference
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<User> users = new ArrayList<>();
+	
+	@JsonManagedReference
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Vehicle> vehicles = new ArrayList<>();
+	
+	@JsonManagedReference
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Load> loads = new ArrayList<>();
 
 	/**
 	 * @return the users
@@ -119,6 +127,55 @@ public class Client implements Serializable{
 	public void removeUser(User user) {
 		users.remove(user);
 		user.setClient(null);
+	}
+	
+
+	/**
+	 * @return the vehicles
+	 */
+	public List<Vehicle> getVehicles() {
+		return vehicles;
+	}
+
+	/**
+	 * @param vehicles the vehicles to set
+	 */
+	public void setVehicles(List<Vehicle> vehicles) {
+		this.vehicles = vehicles;
+	}
+	
+	public void addVehicle(Vehicle vehicle) {
+		vehicles.add(vehicle);
+		vehicle.setClient(this);
+	}
+
+	public void removeVehicle(Vehicle vehicle) {
+		vehicles.remove(vehicle);
+		vehicle.setClient(null);
+	}	
+
+	/**
+	 * @return the loads
+	 */
+	public List<Load> getLoads() {
+		return loads;
+	}
+
+	/**
+	 * @param loads the loads to set
+	 */
+	public void setLoads(List<Load> loads) {
+		this.loads = loads;
+	}
+	
+	public void addLoad(Load load) {
+		loads.add(load);
+		load.setClient(this);
+	}
+
+	public void removeLoad(Load load) {
+		loads.remove(load);
+		load.setClient(null);
 	}
 
 	public Long getClientid() {

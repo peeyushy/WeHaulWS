@@ -1,6 +1,7 @@
 package com.erstaticdata.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erstaticdata.exception.ResourceNotFoundException;
+import com.erstaticdata.model.Client;
 import com.erstaticdata.model.Load;
+import com.erstaticdata.model.Vehicle;
+import com.erstaticdata.repository.ClientRepository;
 import com.erstaticdata.repository.LoadRepository;
 
 @RestController
@@ -25,6 +29,9 @@ public class LoadController {
 
 	@Autowired
 	LoadRepository loadRepository;
+	
+	@Autowired
+	ClientRepository clientRepository;
 
 	@GetMapping("/all")
 	public List<Load> getAllLoads() {
@@ -42,8 +49,13 @@ public class LoadController {
 	}
 	
 	@GetMapping("/clientid/{cid}")
-	public List<Load> getLoadByclientid(@PathVariable(value = "cid") Long cid) {
-		return loadRepository.findLoadByclientid(cid);
+	public List<Load> getLoadByclient(@PathVariable(value = "cid") Long cid) {		
+		return loadRepository.findLoadByclient(clientRepository.findById(cid).get());
+	}
+	
+	@GetMapping("/vehicleid/{vid}")
+	public List<Load> getLoadByVehicleid(@PathVariable(value = "vid") Long vid) {
+		return loadRepository.getLoadByVehicleId(vid);
 	}
 
 	@PutMapping("/id/{id}")
@@ -52,7 +64,7 @@ public class LoadController {
 		Load load = loadRepository.findById(lid)
 				.orElseThrow(() -> new ResourceNotFoundException("Load", "lid", lid));
 
-		load.setClientid(loadDetails.getClientid());
+		load.setClient(loadDetails.getClient());
 		load.setComments(loadDetails.getComments());
 		load.setLassistance(loadDetails.isLassistance());
 		load.setLastupdatedby(loadDetails.getLastupdatedby());

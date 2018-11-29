@@ -72,7 +72,7 @@ public class UserController {
 		user.setUsername(userDetails.getUsername());
 		user.setPassword(bCryptPasswordEncoder.encode(userDetails.getPassword()));
 		user.setEmail(userDetails.getEmail());
-		user.setAvatar(userDetails.getAvatar());
+		user.setUseravatar(userDetails.getUseravatar());
 		user.setContactno(userDetails.getContactno());
 		user.setNotificationtype(userDetails.getNotificationtype());
 		user.setStatus(userDetails.getStatus());

@@ -15,3 +15,9 @@ master data setup
 2. add vehicle types
 3. add load types
 4. add roles
+
+TO-DO
+1. Old dates disable in calendar 
+2. Left/right icon missing in calendar
+3. Picture upload client, user and vehicle
+4. Remove native sql queries search for createNativeQuery all these needs to be replaced with JPQL

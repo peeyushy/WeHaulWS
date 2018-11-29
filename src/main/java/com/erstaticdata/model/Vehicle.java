@@ -5,19 +5,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EntityResult;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,6 +32,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import constants.AppConstants;
@@ -36,6 +41,7 @@ import constants.AppConstants;
 @Table(name = "T_VEHICLES")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = { "createdAt", "updatedAt" }, allowGetters = true)
+
 public class Vehicle implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -46,18 +52,16 @@ public class Vehicle implements Serializable {
 
 	@NotBlank
 	private String regno;
-	
+
 	@OneToOne
-    @JoinColumn(name="vtypeid")
+	@JoinColumn(name = "vtypeid")
 	private VehicleType vtype;
 
-	@ManyToMany	
-	@JoinTable(name="T_VEHICLE_LOADTYPE", 
-    joinColumns=@JoinColumn(name="VID"),
-    inverseJoinColumns=@JoinColumn(name="LTYPEID"))	
+	@ManyToMany
+	@JoinTable(name = "T_VEHICLE_LOADTYPE", joinColumns = @JoinColumn(name = "VID"), inverseJoinColumns = @JoinColumn(name = "LTYPEID"))
 	private List<LoadType> ltype = new ArrayList<>();
 
-	private String avatar;
+	private String vehicleavatar;
 
 	private int opcost;
 
@@ -66,7 +70,10 @@ public class Vehicle implements Serializable {
 	private AppConstants.Status status;
 
 	@NotNull
-	private Long clientid;
+	@ManyToOne
+	@JoinColumn(name = "clientid", referencedColumnName = "clientid")
+	@JsonBackReference
+	private Client client;
 
 	@Column(nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -140,18 +147,12 @@ public class Vehicle implements Serializable {
 		this.ltype = ltype;
 	}
 
-	/**
-	 * @return the avatar
-	 */
-	public String getAvatar() {
-		return avatar;
+	public String getVehicleavatar() {
+		return vehicleavatar;
 	}
 
-	/**
-	 * @param avatar the avatar to set
-	 */
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
+	public void setVehicleavatar(String vehicleavatar) {
+		this.vehicleavatar = vehicleavatar;
 	}
 
 	/**
@@ -182,19 +183,12 @@ public class Vehicle implements Serializable {
 		this.status = status;
 	}
 
-	
-	/**
-	 * @return the clientid
-	 */
-	public Long getClientid() {
-		return clientid;
+	public Client getClient() {
+		return client;
 	}
 
-	/**
-	 * @param clientid the clientid to set
-	 */
-	public void setClientid(Long clientid) {
-		this.clientid = clientid;
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
 	/**
@@ -264,8 +258,8 @@ public class Vehicle implements Serializable {
 		int result = 1;
 		result = prime * result + ((CREATEDAT == null) ? 0 : CREATEDAT.hashCode());
 		result = prime * result + ((UPDATEDAT == null) ? 0 : UPDATEDAT.hashCode());
-		result = prime * result + ((avatar == null) ? 0 : avatar.hashCode());
-		result = prime * result + ((clientid == null) ? 0 : clientid.hashCode());
+		result = prime * result + ((vehicleavatar == null) ? 0 : vehicleavatar.hashCode());
+		result = prime * result + ((client == null) ? 0 : client.hashCode());
 		result = prime * result + ((createdby == null) ? 0 : createdby.hashCode());
 		result = prime * result + ((lastupdatedby == null) ? 0 : lastupdatedby.hashCode());
 		result = prime * result + ((ltype == null) ? 0 : ltype.hashCode());
@@ -301,15 +295,15 @@ public class Vehicle implements Serializable {
 				return false;
 		} else if (!UPDATEDAT.equals(other.UPDATEDAT))
 			return false;
-		if (avatar == null) {
-			if (other.avatar != null)
+		if (vehicleavatar == null) {
+			if (other.vehicleavatar != null)
 				return false;
-		} else if (!avatar.equals(other.avatar))
+		} else if (!vehicleavatar.equals(other.vehicleavatar))
 			return false;
-		if (clientid == null) {
-			if (other.clientid != null)
+		if (client == null) {
+			if (other.client != null)
 				return false;
-		} else if (!clientid.equals(other.clientid))
+		} else if (!client.equals(other.client))
 			return false;
 		if (createdby == null) {
 			if (other.createdby != null)
@@ -356,7 +350,7 @@ public class Vehicle implements Serializable {
 	@Override
 	public String toString() {
 		return "Vehicle [vid=" + vid + ", regno=" + regno + ", vtype=" + vtype + ", ltype=" + ltype + ", avatar="
-				+ avatar + ", opcost=" + opcost + ", status=" + status + ", client=" + clientid + ", CREATEDAT="
+				+ vehicleavatar + ", opcost=" + opcost + ", status=" + status + ", client=" + client + ", CREATEDAT="
 				+ CREATEDAT + ", UPDATEDAT=" + UPDATEDAT + ", createdby=" + createdby + ", lastupdatedby="
 				+ lastupdatedby + "]";
 	}

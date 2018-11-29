@@ -58,7 +58,7 @@ public class User implements Serializable{
 
 	private String notificationtype;
 
-	private String avatar;
+	private String useravatar;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
@@ -145,14 +145,14 @@ public class User implements Serializable{
 
 	public void setNotificationtype(String notificationtype) {
 		this.notificationtype = notificationtype;
+	}	
+
+	public String getUseravatar() {
+		return useravatar;
 	}
 
-	public String getAvatar() {
-		return avatar;
-	}
-
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
+	public void setUseravatar(String useravatar) {
+		this.useravatar = useravatar;
 	}
 
 	public AppConstants.Status getStatus() {
@@ -220,7 +220,7 @@ public class User implements Serializable{
 		int result = 1;
 		result = prime * result + ((CREATEDAT == null) ? 0 : CREATEDAT.hashCode());
 		result = prime * result + ((UPDATEDAT == null) ? 0 : UPDATEDAT.hashCode());
-		result = prime * result + ((avatar == null) ? 0 : avatar.hashCode());
+		result = prime * result + ((useravatar == null) ? 0 : useravatar.hashCode());
 		result = prime * result + ((client == null) ? 0 : client.hashCode());
 		result = prime * result + ((contactno == null) ? 0 : contactno.hashCode());
 		result = prime * result + ((createdby == null) ? 0 : createdby.hashCode());
@@ -258,10 +258,10 @@ public class User implements Serializable{
 				return false;
 		} else if (!UPDATEDAT.equals(other.UPDATEDAT))
 			return false;
-		if (avatar == null) {
-			if (other.avatar != null)
+		if (useravatar == null) {
+			if (other.useravatar != null)
 				return false;
-		} else if (!avatar.equals(other.avatar))
+		} else if (!useravatar.equals(other.useravatar))
 			return false;
 		if (client == null) {
 			if (other.client != null)
