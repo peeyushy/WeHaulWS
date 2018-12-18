@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.erstaticdata.dto.LoadSearchOptionsDto;
 import com.erstaticdata.exception.ResourceNotFoundException;
 import com.erstaticdata.model.Client;
 import com.erstaticdata.model.Load;
@@ -56,6 +57,11 @@ public class LoadController {
 	@GetMapping("/vehicleid/{vid}")
 	public List<Load> getLoadByVehicleid(@PathVariable(value = "vid") Long vid) {
 		return loadRepository.getLoadByVehicleId(vid);
+	}
+	
+	@PostMapping("/searchoptions")
+	public List<Load> getLoadBySearchOptions(@Valid @RequestBody LoadSearchOptionsDto loadSearchOptionsDto) {
+		return loadRepository.getLoadBySearchOptions(loadSearchOptionsDto);
 	}
 
 	@PutMapping("/id/{id}")

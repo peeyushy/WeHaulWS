@@ -21,3 +21,12 @@ TO-DO
 2. Left/right icon missing in calendar
 3. Picture upload client, user and vehicle
 4. Remove native sql queries search for createNativeQuery all these needs to be replaced with JPQL
+5. Master data setup on start
+6. Bulk data upload for : client, user, vehicle, load
+7. add/edit Load page: add google map for pickup & drop location
+8. Validation rules on vehicle type & load type combination
+9. integrate tracker
+10. service to auto expire old loads
+11. integrate sms so incoming can create load entry
+12. show available vehicle & load details on mouse hover of each cell
+13. check how search on location would work with google places api as in db we have string stored. 
