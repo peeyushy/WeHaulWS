@@ -44,10 +44,10 @@ public class LoadRepositoryImpl implements LoadRepositoryCustom {
 		if (!loadSearchOptionsDto.getLoad().getLdroploc().isEmpty()) {
 			queryStr = queryStr + "AND L.LDROPLOC=:LDROPLOC ";
 		}
-		if (loadSearchOptionsDto.getLdatetime_start().toString().length() > 0) {
+		if (loadSearchOptionsDto.getLdatetime_start() != null) {
 			queryStr = queryStr + "AND L.LDATETIME > :LDATETIME_START ";
 		}
-		if (loadSearchOptionsDto.getLdatetime_end().toString().length() > 0) {
+		if (loadSearchOptionsDto.getLdatetime_end() != null) {
 			queryStr = queryStr + "AND L.LDATETIME < :LDATETIME_END ";
 		}
 		if (loadSearchOptionsDto.getVehicle().getVtype() != null
@@ -63,10 +63,10 @@ public class LoadRepositoryImpl implements LoadRepositoryCustom {
 		if (!loadSearchOptionsDto.getLoad().getLdroploc().isEmpty()) {
 			query.setParameter("LDROPLOC", loadSearchOptionsDto.getLoad().getLdroploc());
 		}
-		if (loadSearchOptionsDto.getLdatetime_start().toString().length() > 0) {
+		if (loadSearchOptionsDto.getLdatetime_start() != null) {
 			query.setParameter("LDATETIME_START", loadSearchOptionsDto.getLdatetime_start());
 		}
-		if (loadSearchOptionsDto.getLdatetime_end().toString().length() > 0) {
+		if (loadSearchOptionsDto.getLdatetime_end() != null) {
 			query.setParameter("LDATETIME_END", loadSearchOptionsDto.getLdatetime_end());
 		}
 		if (loadSearchOptionsDto.getVehicle().getVtype() != null
