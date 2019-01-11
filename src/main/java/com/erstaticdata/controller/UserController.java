@@ -75,7 +75,7 @@ public class UserController {
 		user.setUseravatar(userDetails.getUseravatar());
 		user.setContactno(userDetails.getContactno());
 		user.setNotificationtype(userDetails.getNotificationtype());
-		user.setStatus(userDetails.getStatus());
+		user.setActive(userDetails.isActive());
 		// set rev on client
 		Client client = user.getClient();
 		client.setRevid(client.getRevid() + 1);

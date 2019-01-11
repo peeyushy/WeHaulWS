@@ -18,6 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -31,10 +32,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import constants.AppConstants;
 
 @Entity
-@Table(name = "T_USERS")
+@Table(name = "T_USERS", uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }) })
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = { "createdAt", "updatedAt" }, allowGetters = true)
-public class User implements Serializable{
+public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,14 +62,13 @@ public class User implements Serializable{
 	private String useravatar;
 
 	@NotNull
-	@Enumerated(EnumType.STRING)
-	private AppConstants.Status status;
+	private boolean active = true;
 
 	@NotNull
 	@OneToOne
 	@JoinTable(name = "T_USERS_ROLES", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "userid"), inverseJoinColumns = @JoinColumn(name = "roleid", referencedColumnName = "roleid"))
 	private Role role;
-	
+
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "clientid", referencedColumnName = "clientid")
@@ -89,7 +89,7 @@ public class User implements Serializable{
 	private String createdby;
 
 	@NotBlank
-	private String lastupdatedby;	
+	private String lastupdatedby;
 
 	public Long getUserid() {
 		return userid;
@@ -98,7 +98,7 @@ public class User implements Serializable{
 	public void setUserid(Long userid) {
 		this.userid = userid;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
@@ -145,7 +145,7 @@ public class User implements Serializable{
 
 	public void setNotificationtype(String notificationtype) {
 		this.notificationtype = notificationtype;
-	}	
+	}
 
 	public String getUseravatar() {
 		return useravatar;
@@ -155,12 +155,18 @@ public class User implements Serializable{
 		this.useravatar = useravatar;
 	}
 
-	public AppConstants.Status getStatus() {
-		return status;
+	/**
+	 * @return the active
+	 */
+	public boolean isActive() {
+		return active;
 	}
 
-	public void setStatus(AppConstants.Status status) {
-		this.status = status;
+	/**
+	 * @param active the active to set
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public Role getRole() {
@@ -211,7 +217,9 @@ public class User implements Serializable{
 		this.client = client;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -220,7 +228,7 @@ public class User implements Serializable{
 		int result = 1;
 		result = prime * result + ((CREATEDAT == null) ? 0 : CREATEDAT.hashCode());
 		result = prime * result + ((UPDATEDAT == null) ? 0 : UPDATEDAT.hashCode());
-		result = prime * result + ((useravatar == null) ? 0 : useravatar.hashCode());
+		result = prime * result + (active ? 1231 : 1237);
 		result = prime * result + ((client == null) ? 0 : client.hashCode());
 		result = prime * result + ((contactno == null) ? 0 : contactno.hashCode());
 		result = prime * result + ((createdby == null) ? 0 : createdby.hashCode());
@@ -230,13 +238,15 @@ public class User implements Serializable{
 		result = prime * result + ((notificationtype == null) ? 0 : notificationtype.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((useravatar == null) ? 0 : useravatar.hashCode());
 		result = prime * result + ((userid == null) ? 0 : userid.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -258,10 +268,7 @@ public class User implements Serializable{
 				return false;
 		} else if (!UPDATEDAT.equals(other.UPDATEDAT))
 			return false;
-		if (useravatar == null) {
-			if (other.useravatar != null)
-				return false;
-		} else if (!useravatar.equals(other.useravatar))
+		if (active != other.active)
 			return false;
 		if (client == null) {
 			if (other.client != null)
@@ -308,10 +315,10 @@ public class User implements Serializable{
 				return false;
 		} else if (!role.equals(other.role))
 			return false;
-		if (status == null) {
-			if (other.status != null)
+		if (useravatar == null) {
+			if (other.useravatar != null)
 				return false;
-		} else if (!status.equals(other.status))
+		} else if (!useravatar.equals(other.useravatar))
 			return false;
 		if (userid == null) {
 			if (other.userid != null)
@@ -324,5 +331,5 @@ public class User implements Serializable{
 		} else if (!username.equals(other.username))
 			return false;
 		return true;
-	}		
+	}
 }

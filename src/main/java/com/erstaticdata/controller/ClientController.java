@@ -65,20 +65,18 @@ public class ClientController {
 		client.setClientname(companyDetails.getClientname());
 		// once created client type can't be updated
 		// client.setClienttype(companyDetails.getClienttype());
-		client.setAddressline1(companyDetails.getAddressline1());
-		client.setAddressline2(companyDetails.getAddressline2());
-		client.setCity(companyDetails.getCity());
+		client.setAddress(companyDetails.getAddress());
 		client.setComments(companyDetails.getComments());
+		client.setEmail(companyDetails.getEmail());
 		client.setContactno(companyDetails.getContactno());
-		client.setCountry(companyDetails.getCountry());
 		client.setLastupdatedby(companyDetails.getLastupdatedby());
-		client.setPostcode(companyDetails.getPostcode());
-		client.setWebsite(companyDetails.getWebsite());
+		client.setBroker(companyDetails.isBroker());
+		client.setVerified(companyDetails.isVerified());
 		client.setRevid(companyDetails.getRevid() + 1);
-		client.setStatus(companyDetails.getStatus());
-		if (companyDetails.getStatus() == Status.DISABLED) {
+		client.setActive(companyDetails.isActive());
+		if (!companyDetails.isActive()) {
 			for (User user : client.getUsers()) {
-				user.setStatus(Status.DISABLED);
+				user.setActive(false);
 				users.add(user);
 			}
 			client.getUsers().clear();

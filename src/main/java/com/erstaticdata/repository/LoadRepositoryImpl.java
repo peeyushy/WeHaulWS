@@ -38,24 +38,29 @@ public class LoadRepositoryImpl implements LoadRepositoryCustom {
 				+ "where L.CLIENTID=C.CLIENTID AND L.LTYPEID=VLT.LTYPEID AND V.VID=VLT.VID AND L.STATUS='ACTIVE' AND V.STATUS='ACTIVE' AND "
 				+ "V.VTYPEID=VT.VTYPEID AND VT.STATUS='ACTIVE' AND L.LTYPEID=LT.LTYPEID AND LT.STATUS='ACTIVE' ";
 
+		String baseQuery = "select ALLLOADS.* from (select L.* "
+				+ "from T_LOADS L ,T_LOADTYPE LT,T_CLIENTS C where L.CLIENTID=C.CLIENTID "
+				+ "AND  L.LTYPEID=LT.LTYPEID AND L.STATUS='ACTIVE' " + "AND LT.STATUS='ACTIVE') ALLLOADS ";
+
 		if (!loadSearchOptionsDto.getLoad().getLpickuploc().isEmpty()) {
-			queryStr = queryStr + "AND L.LPICKUPLOC=:LPICKUPLOC ";
+			baseQuery = baseQuery.replace(") ALLLOADS ", " AND L.LPICKUPLOC=:LPICKUPLOC) ALLLOADS ");
 		}
 		if (!loadSearchOptionsDto.getLoad().getLdroploc().isEmpty()) {
-			queryStr = queryStr + "AND L.LDROPLOC=:LDROPLOC ";
+			baseQuery = baseQuery.replace(") ALLLOADS ", " AND L.LDROPLOC=:LDROPLOC) ALLLOADS ");
 		}
 		if (loadSearchOptionsDto.getLdatetime_start() != null) {
-			queryStr = queryStr + "AND L.LDATETIME > :LDATETIME_START ";
+			baseQuery = baseQuery.replace(") ALLLOADS ", " AND L.LDATETIME > :LDATETIME_START) ALLLOADS ");
 		}
 		if (loadSearchOptionsDto.getLdatetime_end() != null) {
-			queryStr = queryStr + "AND L.LDATETIME < :LDATETIME_END ";
+			baseQuery = baseQuery.replace(") ALLLOADS ", " AND L.LDATETIME < :LDATETIME_END) ALLLOADS ");
 		}
 		if (loadSearchOptionsDto.getVehicle().getVtype() != null
 				&& loadSearchOptionsDto.getVehicle().getVtype().getVtypeid() != null) {
-			queryStr = queryStr + "AND V.VTYPEID=:VTYPEID ";
+			baseQuery = baseQuery + ",T_VEHICLES V, T_VEHICLETYPE VT,T_VEHICLE_LOADTYPE VLT WHERE VT.VTYPEID=:VTYPEID "
+					+ "AND VT.VTYPEID=V.VTYPEID AND V.VID=VLT.VID AND VLT.LTYPEID=ALLLOADS.LTYPEID";
 		}
 
-		Query query = entityManager.createNativeQuery(queryStr, Load.class);
+		Query query = entityManager.createNativeQuery(baseQuery, Load.class);
 
 		if (!loadSearchOptionsDto.getLoad().getLpickuploc().isEmpty()) {
 			query.setParameter("LPICKUPLOC", loadSearchOptionsDto.getLoad().getLpickuploc());
