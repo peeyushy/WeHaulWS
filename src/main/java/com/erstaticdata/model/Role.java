@@ -7,7 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import com.erstaticdata.constants.AppConstants;
+import com.erstaticdata.constants.AppConstants.RoleNames;
 
 @Entity
 @Table(name = "T_ROLES")
@@ -19,8 +22,8 @@ public class Role implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long roleid;
 	
-	@NotBlank
-	private String rolename;
+	@NotNull
+	private AppConstants.RoleNames rolename;
 
 	private String roledesc;
 
@@ -32,11 +35,11 @@ public class Role implements Serializable{
 		this.roleid = roleid;
 	}
 
-	public String getRolename() {
+	public RoleNames getRolename() {
 		return rolename;
 	}
 
-	public void setRolename(String rolename) {
+	public void setRolename(RoleNames rolename) {
 		this.rolename = rolename;
 	}
 

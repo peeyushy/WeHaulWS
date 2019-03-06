@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import constants.AppConstants;
+import com.erstaticdata.constants.AppConstants;
 
 @Entity
 @Table(name = "T_LOADTYPE")

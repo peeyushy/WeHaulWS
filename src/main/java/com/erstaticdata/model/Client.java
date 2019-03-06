@@ -27,10 +27,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.erstaticdata.constants.AppConstants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import constants.AppConstants;
 
 @Entity
 @Table(name = "T_CLIENTS", uniqueConstraints = { @UniqueConstraint(columnNames = { "clientname", "contactno" }) })
@@ -57,7 +56,8 @@ public class Client implements Serializable {
 	@NotBlank
 	private String address;
 
-	private boolean broker = true;
+	@NotNull
+	private String city;
 
 	// @Column(columnDefinition = "boolean default false")
 	private boolean verified = false;
@@ -99,6 +99,10 @@ public class Client implements Serializable {
 	@JsonManagedReference
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Load> loads = new ArrayList<>();
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Requirement> requirements = new ArrayList<>();
 
 	/**
 	 * @return the users
@@ -170,6 +174,30 @@ public class Client implements Serializable {
 	public void removeLoad(Load load) {
 		loads.remove(load);
 		load.setClient(null);
+	}
+
+	/**
+	 * @return the requirements
+	 */
+	public List<Requirement> getRequirements() {
+		return requirements;
+	}
+
+	/**
+	 * @param requirements the requirements to set
+	 */
+	public void setRequirements(List<Requirement> requirements) {
+		this.requirements = requirements;
+	}
+
+	public void addRequirement(Requirement requirement) {
+		requirements.add(requirement);
+		requirement.setClient(this);
+	}
+
+	public void removeRequirement(Requirement requirement) {
+		requirements.remove(requirement);
+		requirement.setClient(null);
 	}
 
 	public Long getClientid() {
@@ -295,17 +323,17 @@ public class Client implements Serializable {
 	}
 
 	/**
-	 * @return the broker
+	 * @return the city
 	 */
-	public boolean isBroker() {
-		return broker;
+	public String getCity() {
+		return city;
 	}
 
 	/**
-	 * @param broker the broker to set
+	 * @param city the city to set
 	 */
-	public void setBroker(boolean broker) {
-		this.broker = broker;
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	/**
@@ -335,7 +363,7 @@ public class Client implements Serializable {
 		result = prime * result + ((UPDATEDAT == null) ? 0 : UPDATEDAT.hashCode());
 		result = prime * result + (active ? 1231 : 1237);
 		result = prime * result + ((address == null) ? 0 : address.hashCode());
-		result = prime * result + (broker ? 1231 : 1237);
+		result = prime * result + ((city == null) ? 0 : city.hashCode());
 		result = prime * result + ((clientid == null) ? 0 : clientid.hashCode());
 		result = prime * result + ((clientname == null) ? 0 : clientname.hashCode());
 		result = prime * result + ((clienttype == null) ? 0 : clienttype.hashCode());
@@ -345,6 +373,7 @@ public class Client implements Serializable {
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((lastupdatedby == null) ? 0 : lastupdatedby.hashCode());
 		result = prime * result + ((loads == null) ? 0 : loads.hashCode());
+		result = prime * result + ((requirements == null) ? 0 : requirements.hashCode());
 		result = prime * result + revid;
 		result = prime * result + ((users == null) ? 0 : users.hashCode());
 		result = prime * result + ((vehicles == null) ? 0 : vehicles.hashCode());
@@ -383,7 +412,10 @@ public class Client implements Serializable {
 				return false;
 		} else if (!address.equals(other.address))
 			return false;
-		if (broker != other.broker)
+		if (city == null) {
+			if (other.city != null)
+				return false;
+		} else if (!city.equals(other.city))
 			return false;
 		if (clientid == null) {
 			if (other.clientid != null)
@@ -427,6 +459,11 @@ public class Client implements Serializable {
 				return false;
 		} else if (!loads.equals(other.loads))
 			return false;
+		if (requirements == null) {
+			if (other.requirements != null)
+				return false;
+		} else if (!requirements.equals(other.requirements))
+			return false;
 		if (revid != other.revid)
 			return false;
 		if (users == null) {
@@ -443,5 +480,4 @@ public class Client implements Serializable {
 			return false;
 		return true;
 	}
-
 }

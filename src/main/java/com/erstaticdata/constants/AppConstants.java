@@ -1,11 +1,11 @@
-package constants;
+package com.erstaticdata.constants;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppConstants implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	public enum Status {
@@ -13,10 +13,18 @@ public class AppConstants implements Serializable {
 	};
 
 	public enum ClientType {
-		A, S, T
+		A, T, S, B
 	};
 
 	public enum LoadStatus {
 		ACTIVE, DISABLED, EXPIRED
+	};
+
+	public enum ReqStatus {
+		NEW, OPEN, CLOSED, EXPIRED
+	};
+
+	public enum RoleNames {
+		ADMIN, TWOWAY, TRANSPORTER, SUPPLER
 	};
 }

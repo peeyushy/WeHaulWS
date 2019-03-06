@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.erstaticdata.exception.ResourceNotFoundException;
 import com.erstaticdata.model.Client;
 import com.erstaticdata.model.User;
-import com.erstaticdata.repository.ClientRepository;
+import com.erstaticdata.model.GetClient;
 import com.erstaticdata.repository.RoleRepository;
 import com.erstaticdata.repository.UserRepository;
 
@@ -50,11 +50,22 @@ public class UserController {
 	@GetMapping("/id/{id}")
 	public User getUserById(@PathVariable(value = "id") Long userId) {
 		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-	}	
+	}
+	
+	@GetMapping("/getclientbyusername/{username}")
+	public GetClient getClientByUserName(@PathVariable(value = "username") String username) {
+		return userRepository.findClientByusername(username);
+	}
+	
+	@GetMapping("/getclientidbyusername/{username}")
+	public Long getClientIdByUserName(@PathVariable(value = "username") String username) {
+		GetClient client=userRepository.findClientByusername(username);
+		return client.getClient().getClientid();
+	}
 
 	@GetMapping("/username/{username}")
 	public User getUserByUserName(@PathVariable(value = "username") String username) {
-		return userRepository.findUserByusername(username);
+		return userRepository.findByusernameAndActive(username, true);
 	}
 
 	@GetMapping("/adminusername/{username}")

@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.erstaticdata.constants.AppConstants;
+import com.erstaticdata.constants.AppConstants.Status;
 import com.erstaticdata.exception.ResourceNotFoundException;
 import com.erstaticdata.model.Client;
 import com.erstaticdata.model.User;
+import com.erstaticdata.model.GetClient;
 import com.erstaticdata.repository.ClientRepository;
 import com.erstaticdata.repository.UserRepository;
-
-import constants.AppConstants;
-import constants.AppConstants.Status;
 
 @RestController
 @RequestMapping("/ERStaticData/client")
@@ -38,6 +38,12 @@ public class ClientController {
 	@GetMapping("/all")
 	public List<Client> getAllClients() {
 		return clientRepository.findAll();
+	}
+	
+	@GetMapping("/search")
+	public List<Client> getAllExceptAdminAndLoggedInClients() {
+		//loggedinuser check TO-DO
+		return clientRepository.findByclienttypeNot(AppConstants.ClientType.A);		
 	}
 
 	@PostMapping("/create")
@@ -63,14 +69,13 @@ public class ClientController {
 				.orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
 		List<User> users = new ArrayList<>();
 		client.setClientname(companyDetails.getClientname());
-		// once created client type can't be updated
-		// client.setClienttype(companyDetails.getClienttype());
+		client.setClienttype(companyDetails.getClienttype());
 		client.setAddress(companyDetails.getAddress());
 		client.setComments(companyDetails.getComments());
 		client.setEmail(companyDetails.getEmail());
 		client.setContactno(companyDetails.getContactno());
 		client.setLastupdatedby(companyDetails.getLastupdatedby());
-		client.setBroker(companyDetails.isBroker());
+		client.setCity(companyDetails.getCity());
 		client.setVerified(companyDetails.isVerified());
 		client.setRevid(companyDetails.getRevid() + 1);
 		client.setActive(companyDetails.isActive());
