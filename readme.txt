@@ -1,5 +1,5 @@
 1. Start HSQLSB server
-C:\setups\hsqldb-2.4.1\bin>java -cp ../lib/hsqldb.jar org.hsqldb.server.Server --database.0 file:C:\setups\DB\erdb\erdb --dbname.0 erdb
+C:\setups\hsqldb-2.4.1\bin>java -cp ../lib/hsqldb.jar org.hsqldb.server.Server --database.0 file:C:\setups\DB\whdb\whdb --dbname.0 whdb
 
 2. Start runManagerSwing to access DB
 double click - > C:\setup\hsqldb-2.4.1\bin\runManagerSwing

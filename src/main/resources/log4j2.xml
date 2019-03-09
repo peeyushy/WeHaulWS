@@ -13,8 +13,8 @@
 		</Console>
 		<!-- Rolling File Appender -->
 		<RollingFile name="FileAppender"
-			fileName="logs/ERStaticData.log"
-			filePattern="logs/ERStaticData-%d{yyyy-MM-dd}-%i.log">
+			fileName="logs/WeHaulWS.log"
+			filePattern="logs/WeHaulWS-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout>
 				<Pattern>${LOG_PATTERN}</Pattern>
 			</PatternLayout>

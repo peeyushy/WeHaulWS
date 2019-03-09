@@ -4,13 +4,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.emptyride</groupId>
-	<artifactId>ERStaticData</artifactId>
+	<groupId>com.paar</groupId>
+	<artifactId>WeHaulWS</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>ERStaticData</name>
-	<description>Rest API for emptyride Application</description>
+	<name>WeHaul Webservice</name>
+	<description>Rest API for WeHaul Application</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
