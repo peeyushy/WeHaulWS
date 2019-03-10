@@ -40,10 +40,20 @@ public class ClientController {
 		return clientRepository.findAll();
 	}
 	
+	@GetMapping("/all-active")
+	public List<Client> getAllActiveClients() {
+		return clientRepository.getClientsByActive(true);
+	}
+	
 	@GetMapping("/search")
-	public List<Client> getAllExceptAdminAndLoggedInClients() {
-		//loggedinuser check TO-DO
+	public List<Client> getAllExceptAdminClients() {
 		return clientRepository.findByclienttypeNot(AppConstants.ClientType.A);		
+	}
+	
+	@GetMapping("/search/{loggedinclientname}")
+	public List<Client> getAllExceptAdminAndLoggedInClients(
+			@PathVariable(value = "loggedinclientname") String clientname) {
+		return clientRepository.findNonAdminActiveClientsWhereclientnameNotIn(clientname);
 	}
 
 	@PostMapping("/create")
