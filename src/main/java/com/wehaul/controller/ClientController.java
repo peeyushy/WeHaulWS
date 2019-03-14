@@ -39,21 +39,26 @@ public class ClientController {
 	public List<Client> getAllClients() {
 		return clientRepository.findAll();
 	}
-	
+
 	@GetMapping("/all-active")
 	public List<Client> getAllActiveClients() {
 		return clientRepository.getClientsByActive(true);
 	}
-	
+
 	@GetMapping("/search")
 	public List<Client> getAllExceptAdminClients() {
-		return clientRepository.findByclienttypeNot(AppConstants.ClientType.A);		
+		return clientRepository.findByclienttypeNot(AppConstants.ClientType.A);
 	}
-	
-	@GetMapping("/search/{loggedinclientname}")
+
+	@GetMapping("/search/{loggedinclientidcommasearchstr}")
 	public List<Client> getAllExceptAdminAndLoggedInClients(
-			@PathVariable(value = "loggedinclientname") String clientname) {
-		return clientRepository.findNonAdminActiveClientsWhereclientnameNotIn(clientname);
+			@PathVariable(value = "loggedinclientidcommasearchstr") String clientnamecommasearchstr) {
+		String[] result = clientnamecommasearchstr.split(",");
+		if (result.length > 1) {
+			return clientRepository.findNonAdminActiveClientsWhereclientidNotIn(Long.valueOf(result[0]), "%"+result[1]+"%");
+		} else {
+			return clientRepository.findNonAdminActiveClientsWhereclientidNotIn(Long.valueOf(result[0]));
+		}
 	}
 
 	@PostMapping("/create")
