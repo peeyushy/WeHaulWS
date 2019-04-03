@@ -12,8 +12,11 @@ import com.wehaul.model.Requirement;
 
 @Repository
 public interface RequirementRepository extends JpaRepository<Requirement, Long> {	
+	GetClient findClientidByReqid(Long reqid);
 	List<Requirement> findRequirementByclient(Client client);
+	List<Requirement> findRequirementByStatus(AppConstants.ReqStatus status);
 	List<Requirement> findRequirementBystatusIn(List<AppConstants.ReqStatus> statusin);
 	List<Requirement> findRequirementBystatusNotIn(List<AppConstants.ReqStatus> statusnotin);
-	GetClient findClientidByReqid(Long reqid);
+	List<Requirement> findRequirementByclientAndStatus(Client client,AppConstants.ReqStatus status);
+	List<Requirement> findRequirementByclientAndStatusIn(Client client,List<AppConstants.ReqStatus> statusLst);	
 }

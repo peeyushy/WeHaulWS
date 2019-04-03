@@ -32,7 +32,7 @@ public class ScheduledTasks {
 		log.info("The time is now to sendMessages {}", dateFormat.format(new Date()));
 		List<AppConstants.ReqStatus> newAndOpenReqStatusLst = new ArrayList<>();
 		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.NEW);
-		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.OPEN);
+		//newAndOpenReqStatusLst.add(AppConstants.ReqStatus.OPEN);
 		List<Requirement> reqLst = reqRepo.findRequirementBystatusIn(newAndOpenReqStatusLst);
 		for (Requirement req : reqLst) {
 			req.setLastupdatedby("SYSTEM");			
@@ -48,7 +48,7 @@ public class ScheduledTasks {
 		log.info("The time is now for setExpiryForRequirement {}", dateFormat.format(new Date()));
 
 		List<AppConstants.ReqStatus> newAndOpenReqStatusLst = new ArrayList<>();
-		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.NEW);
+		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.QUOTED);
 		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.OPEN);
 		List<Requirement> reqLst = reqRepo.findRequirementBystatusIn(newAndOpenReqStatusLst);
 		

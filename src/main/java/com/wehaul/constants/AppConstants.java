@@ -21,7 +21,7 @@ public class AppConstants implements Serializable {
 	};
 
 	public enum ReqStatus {
-		NEW, OPEN, CLOSED, EXPIRED
+		NEW, OPEN, QUOTED, CLOSED, EXPIRED
 	};
 
 	public enum RoleNames {
