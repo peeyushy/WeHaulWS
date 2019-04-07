@@ -24,6 +24,7 @@ import com.wehaul.model.GetClient;
 import com.wehaul.model.User;
 import com.wehaul.repository.ClientRepository;
 import com.wehaul.repository.UserRepository;
+import com.wehaul.util.EncryptionUtils;
 
 @RestController
 @RequestMapping("/wehaul/client")
@@ -63,6 +64,7 @@ public class ClientController {
 
 	@PostMapping("/create")
 	public Client createClient(@Valid @RequestBody Client client) {
+		client.setWebuniquecode(EncryptionUtils.encrypt(client.getContactno()));
 		return clientRepository.save(client);
 	}
 
@@ -102,7 +104,7 @@ public class ClientController {
 			client.getUsers().clear();
 			client.getUsers().addAll(users);
 		}
-
+		client.setWebuniquecode(EncryptionUtils.encrypt(companyDetails.getContactno()));
 		Client updatedClient = clientRepository.save(client);
 		return updatedClient;
 	}

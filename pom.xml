@@ -6,7 +6,7 @@
 
 	<groupId>com.paar</groupId>
 	<artifactId>WeHaulWS</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<packaging>jar</packaging>
 
 	<name>WeHaul Webservice</name>
@@ -74,6 +74,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+           <groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

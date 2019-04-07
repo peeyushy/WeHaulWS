@@ -9,13 +9,17 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.wehaul.constants.AppConstants;
-import com.wehaul.constants.AppConstants.ReqStatus;
+import com.wehaul.constants.AppConstants.ClientType;
+import com.wehaul.model.Client;
 import com.wehaul.model.Requirement;
+import com.wehaul.repository.ClientRepository;
 import com.wehaul.repository.RequirementRepository;
+import com.wehaul.util.EMailUtils;
 
 @Component
 public class ScheduledTasks {
@@ -23,24 +27,65 @@ public class ScheduledTasks {
 	@Autowired
 	RequirementRepository reqRepo;
 
+	@Autowired
+	ClientRepository clientRepo;
+
+	@Autowired
+	EMailUtils emailUtils;
+
 	private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+	private static final String EMAIL_SUBJECT = "New load/vehicle available";
+
+	@Value("${weblinkbaseurl}")
+	private String WEBLINK_BASE_URL;
+
 	@Scheduled(cron = "${cron.expression.outmessage}")
 	public void sendMessages() {
 		log.info("The time is now to sendMessages {}", dateFormat.format(new Date()));
-		List<AppConstants.ReqStatus> newAndOpenReqStatusLst = new ArrayList<>();
-		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.NEW);
-		//newAndOpenReqStatusLst.add(AppConstants.ReqStatus.OPEN);
-		List<Requirement> reqLst = reqRepo.findRequirementBystatusIn(newAndOpenReqStatusLst);
-		for (Requirement req : reqLst) {
-			req.setLastupdatedby("SYSTEM");			
-			req.setStatus(AppConstants.ReqStatus.OPEN);	
-			req.setRetryAttempts(req.getRetryAttempts()+1);
-			reqRepo.save(req);
-			log.info("req open {}", req.toString());
+		List<AppConstants.ReqStatus> newReqStatusLst = new ArrayList<>();
+		newReqStatusLst.add(AppConstants.ReqStatus.NEW);
+		try {
+			List<Requirement> reqLst = reqRepo.findRequirementBystatusIn(newReqStatusLst);
+			/* need to broadcast as soon as we have NEW requirement. */
+			if (!reqLst.isEmpty()) {
+				// call the mail service or SMS service
+				List<Client> nonAdminClientsLst = clientRepo.findByclienttypeNot(ClientType.A);
+				for (Client client : nonAdminClientsLst) {
+					try {
+						if (client.getEmail().isEmpty()) {
+							log.info(" no email found for client " + client.getClientname());
+						} else {
+							if(client.getWebuniquecode().isEmpty()) {
+								log.info(" Webuniquecode is empty, Not sending email for: " + client.getClientname());
+							}else {
+								emailUtils.sendMail(client.getEmail(),
+										getMessageBody(client.getClientname(), client.getWebuniquecode()), EMAIL_SUBJECT);	
+							}
+						}
+					} catch (Exception ex) {
+						log.error(" Exception in scheduler while sending emails to "+client.getClientname()+" : " + ex);
+					}
+				}
+			}
+			/* Update requirement status to OPEN */
+			for (Requirement req : reqLst) {
+				req.setLastupdatedby("SYSTEM");
+				req.setStatus(AppConstants.ReqStatus.OPEN);
+				req.setRetryAttempts(req.getRetryAttempts() + 1);
+				reqRepo.save(req);
+				log.info("req open {}", req.toString());
+			}
+		} catch (Exception ex) {
+			log.info(" Exception occured in schedular " + ex);
 		}
+	}
+
+	private String getMessageBody(String clientName, String webUniqueCode) {
+		return "Dear "+clientName+",\n\nWe have new load/vehicle requirements. Please check the following link and send us your quotes.\n\n"
+				+ WEBLINK_BASE_URL + "?cid=" + webUniqueCode + "\n\nRegards,\n" + "TrucksNLorries";
 	}
 
 	@Scheduled(cron = "${cron.expression.setexpiry}")
@@ -51,7 +96,7 @@ public class ScheduledTasks {
 		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.QUOTED);
 		newAndOpenReqStatusLst.add(AppConstants.ReqStatus.OPEN);
 		List<Requirement> reqLst = reqRepo.findRequirementBystatusIn(newAndOpenReqStatusLst);
-		
+
 		for (Requirement req : reqLst) {
 			if (req.getReqdatetime().isBefore(LocalDateTime.now())) {
 				req.setLastupdatedby("SYSTEM");

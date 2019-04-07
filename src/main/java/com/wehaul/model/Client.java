@@ -71,6 +71,9 @@ public class Client implements Serializable {
 	private boolean active = true;
 
 	private int revid;
+	
+	@NotNull
+	private String webuniquecode;
 
 	@Column(nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -232,6 +235,14 @@ public class Client implements Serializable {
 
 	public void setRevid(int revid) {
 		this.revid = revid;
+	}	
+
+	public String getWebuniquecode() {
+		return webuniquecode;
+	}
+
+	public void setWebuniquecode(String webuniquecode) {
+		this.webuniquecode = webuniquecode;
 	}
 
 	public Date getCREATEDAT() {
@@ -318,6 +329,7 @@ public class Client implements Serializable {
 		result = prime * result + revid;
 		result = prime * result + ((users == null) ? 0 : users.hashCode());
 		result = prime * result + (verified ? 1231 : 1237);
+		result = prime * result + ((webuniquecode == null) ? 0 : webuniquecode.hashCode());
 		return result;
 	}
 
@@ -405,6 +417,11 @@ public class Client implements Serializable {
 		} else if (!users.equals(other.users))
 			return false;
 		if (verified != other.verified)
+			return false;
+		if (webuniquecode == null) {
+			if (other.webuniquecode != null)
+				return false;
+		} else if (!webuniquecode.equals(other.webuniquecode))
 			return false;
 		return true;
 	}	

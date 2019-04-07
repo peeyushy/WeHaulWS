@@ -27,6 +27,4 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 	List<Client> findNonAdminActiveClientsWhereclientidNotIn(Long clientid, String queryStr);
 
 	List<Client> findByclientnameNot(String clientName);
-
-	// List<Client> findByclienttypeNotAnd(ClientType clientType);
 }
