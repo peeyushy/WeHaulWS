@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wehaul.constants.AppConstants;
 import com.wehaul.constants.AppConstants.ReqStatus;
+import com.wehaul.dto.RequirementDto;
 import com.wehaul.exception.ResourceNotFoundException;
 import com.wehaul.model.GetClient;
 import com.wehaul.model.Requirement;
 import com.wehaul.repository.ClientRepository;
 import com.wehaul.repository.RequirementRepository;
+import com.wehaul.service.RequirementService;
 
 @RestController
 @RequestMapping("/wehaul/req")
@@ -34,6 +36,9 @@ public class RequirementController {
 
 	@Autowired
 	ClientRepository clientRepository;
+	
+	@Autowired
+	RequirementService requirementService;
 
 	@GetMapping("/all")
 	public List<Requirement> getAllRequirements() {
@@ -103,6 +108,7 @@ public class RequirementController {
 		String[] args = cidandstatus.split(",");
 		String cid;
 		ArrayList<ReqStatus> statusLst = new ArrayList<AppConstants.ReqStatus>();
+		
 		if (args.length > 1) {
 			cid = args[0];
 			List<String> items = Arrays.asList(args[1].split("\\s*#\\s*"));
@@ -180,4 +186,14 @@ public class RequirementController {
 
 		return ResponseEntity.ok().build();
 	}
+	
+	@GetMapping("/getOpenAndQuotedReq/{encryptedCID}")
+	public List<RequirementDto> getOpenAndQuotedReq(@PathVariable(value = "encryptedCID") String encryptedCID) throws Exception {
+		
+		List<RequirementDto> requirementList  = requirementService.getRequirementList(encryptedCID);
+	
+		return requirementList;	
+	}
+	
+	
 }
