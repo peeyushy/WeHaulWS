@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.wehaul.constants.AppConstants;
 import com.wehaul.constants.AppConstants.ReqStatus;
 import com.wehaul.dto.RequirementDto;
 import com.wehaul.exception.ResourceNotFoundException;
+import com.wehaul.exception.WeHaulAPIServiceException;
 import com.wehaul.model.GetClient;
 import com.wehaul.model.Requirement;
 import com.wehaul.repository.ClientRepository;
@@ -190,7 +192,14 @@ public class RequirementController {
 	@GetMapping("/getOpenAndQuotedReq/{encryptedCID}")
 	public List<RequirementDto> getOpenAndQuotedReq(@PathVariable(value = "encryptedCID") String encryptedCID) throws Exception {
 		
-		List<RequirementDto> requirementList  = requirementService.getRequirementList(encryptedCID);
+		List<RequirementDto> requirementList = null;
+		try {
+		requirementList  = requirementService.getRequirementList(encryptedCID);
+		} catch(WeHaulAPIServiceException ex) {
+			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND," Client Not Verified");
+		} catch (Exception e) {
+			throw new Exception("Exception Occured");
+		}
 	
 		return requirementList;	
 	}

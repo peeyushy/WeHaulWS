@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,9 +16,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.wehaul.dao.RequirementDao;
-import com.wehaul.dto.ClientDto;
 import com.wehaul.dto.RequirementDto;
-import com.wehaul.model.Requirement;
 
 /**
  * @author as.singh
@@ -40,12 +39,17 @@ public class RequirementDaoImpl implements RequirementDao {
 
 	@Override
 	public String getClientDetailsByPhone(String webUniqueCode) throws Exception {
-		System.out.println("==========dao unique code====="+webUniqueCode);
 		MapSqlParameterSource params = new MapSqlParameterSource().addValue("webUniqueCode", webUniqueCode);
 		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(
 				jdbcTemplate.getDataSource());
-		String clientId = namedParameterJdbcTemplate.queryForObject(SLECT_CLIENT_BY_ENCRYPTED_PHONE, params,
+		String clientId = null;
+		try {
+		clientId = namedParameterJdbcTemplate.queryForObject(SLECT_CLIENT_BY_ENCRYPTED_PHONE, params,
 				String.class);
+		}
+		catch (EmptyResultDataAccessException e) {
+			   return null;
+		  }
 		return clientId;
 	}
 
