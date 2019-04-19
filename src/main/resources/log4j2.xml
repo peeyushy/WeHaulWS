@@ -13,13 +13,14 @@
 		</Console>
 		<!-- Rolling File Appender -->
 		<RollingFile name="FileAppender"
-			fileName="logs/WeHaulWS.log"
-			filePattern="logs/WeHaulWS-%d{yyyy-MM-dd}-%i.log">
+			fileName="/home4/peeyush/tnl/WeHaulWS/logs/WeHaulWS.log"
+			filePattern="/home4/peeyush/tnl/WeHaulWS/logs/WeHaulWS-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout>
 				<Pattern>${LOG_PATTERN}</Pattern>
 			</PatternLayout>
 			<Policies>
-				<SizeBasedTriggeringPolicy size="10MB" />
+				<!-- <SizeBasedTriggeringPolicy size="10MB" /> -->
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
 			</Policies>
 			<DefaultRolloverStrategy max="10" />
 		</RollingFile>
