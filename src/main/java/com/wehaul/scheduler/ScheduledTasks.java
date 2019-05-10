@@ -1,5 +1,7 @@
 package com.wehaul.scheduler;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,15 +60,17 @@ public class ScheduledTasks {
 						if (client.getEmail().isEmpty()) {
 							log.info(" no email found for client " + client.getClientname());
 						} else {
-							if(client.getWebuniquecode().isEmpty()) {
+							if (client.getWebuniquecode().isEmpty()) {
 								log.info(" Webuniquecode is empty, Not sending email for: " + client.getClientname());
-							}else {
-								emailUtils.sendMail(client.getEmail(),
-										getMessageBody(client.getClientname(), client.getWebuniquecode()), EMAIL_SUBJECT);	
+							} else {
+								emailUtils.sendMail(client.getEmail(), getMessageBody(client), EMAIL_SUBJECT);
+								log.info(" email sent to : " + client.getClientname() + ", email address: "
+										+ client.getEmail());
 							}
 						}
 					} catch (Exception ex) {
-						log.error(" Exception in scheduler while sending emails to "+client.getClientname()+" : " + ex);
+						log.error(" Exception in scheduler while sending emails to " + client.getClientname() + " : "
+								+ ex);
 					}
 				}
 			}
@@ -83,9 +87,11 @@ public class ScheduledTasks {
 		}
 	}
 
-	private String getMessageBody(String clientName, String webUniqueCode) {
-		return "Dear "+clientName+",\n\nWe have new load/vehicle requirements. Please check the following link and send us your quotes.\n\n"
-				+ WEBLINK_BASE_URL + "?cid=" + webUniqueCode + "\n\nRegards,\n" + "TrucksNLorries";
+	private String getMessageBody(Client client) throws UnsupportedEncodingException {
+		return "Dear " + client.getClientname()
+				+ ",\n\nWe have new load/vehicle requirements. Please check the following link and send us your quotes.\n\n"
+				+ WEBLINK_BASE_URL + "?cid=" + URLEncoder.encode(client.getWebuniquecode(), "UTF-8") + "\n\nRegards,\n"
+				+ "TrucksNLorries";
 	}
 
 	@Scheduled(cron = "${cron.expression.setexpiry}")

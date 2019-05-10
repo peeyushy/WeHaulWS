@@ -1,12 +1,16 @@
 package com.wehaul.controller;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wehaul.constants.AppConstants;
 import com.wehaul.constants.AppConstants.ReqStatus;
+import com.wehaul.dto.QuoteDto;
 import com.wehaul.dto.RequirementDto;
 import com.wehaul.exception.ResourceNotFoundException;
 import com.wehaul.exception.WeHaulAPIServiceException;
@@ -28,17 +33,20 @@ import com.wehaul.model.Requirement;
 import com.wehaul.repository.ClientRepository;
 import com.wehaul.repository.RequirementRepository;
 import com.wehaul.service.RequirementService;
+import com.wehaul.service.impl.RequirementServiceImpl;
 
 @RestController
 @RequestMapping("/wehaul/req")
 public class RequirementController {
+
+	private static final Logger logReqControler = LoggerFactory.getLogger(RequirementController.class);
 
 	@Autowired
 	RequirementRepository reqRepository;
 
 	@Autowired
 	ClientRepository clientRepository;
-	
+
 	@Autowired
 	RequirementService requirementService;
 
@@ -63,12 +71,16 @@ public class RequirementController {
 			return new ArrayList<Requirement>();
 		}
 	}
-	
-	@GetMapping("/statusin/{statusin}")
-	public List<Requirement> getAllRequirementsByStatusIn(@PathVariable(value = "statusin") String statusin) {
-		List<ReqStatus> statusLst=new ArrayList<AppConstants.ReqStatus>();
-		List<String> items = Arrays.asList(statusin.split("\\s*#\\s*"));
-		for (String status : items) {
+
+	/**
+	 * 
+	 * @param statusin 'OPEN,CLOSE'
+	 * @return
+	 */
+	@GetMapping("/statusin/[{statusin}]")
+	public List<Requirement> getAllRequirementsByStatusIn(@PathVariable(value = "statusin") String[] statusin) {
+		List<ReqStatus> statusLst = new ArrayList<AppConstants.ReqStatus>();
+		for (String status : statusin) {
 			if (status.equalsIgnoreCase(AppConstants.ReqStatus.CLOSED.toString())) {
 				statusLst.add(AppConstants.ReqStatus.CLOSED);
 			} else if (status.equalsIgnoreCase(AppConstants.ReqStatus.EXPIRED.toString())) {
@@ -104,35 +116,34 @@ public class RequirementController {
 		return reqRepository.findRequirementByclient(clientRepository.findById(cid).get());
 	}
 
-	@GetMapping("/byclientidandstatus/{cidandstatus}")
-	public List<Requirement> getReqByClientAndStatus(@PathVariable(value = "cidandstatus") String cidandstatus) {
-		/* cidandstatus format: 11,OPEN#CLOSE */
-		String[] args = cidandstatus.split(",");
-		String cid;
+	/**
+	 * 
+	 * @param cid
+	 * @param status [OPEN,QUOTED]
+	 * @return
+	 */
+
+	@GetMapping("/byclientidandstatus/{cid}/[{status}]")
+	public List<Requirement> getReqByClientAndStatus(@PathVariable(value = "cid") Long cid,
+			@PathVariable(value = "status") String[] status) {
+
 		ArrayList<ReqStatus> statusLst = new ArrayList<AppConstants.ReqStatus>();
-		
-		if (args.length > 1) {
-			cid = args[0];
-			List<String> items = Arrays.asList(args[1].split("\\s*#\\s*"));
-			for (String status : items) {
-				if (status.equalsIgnoreCase(AppConstants.ReqStatus.CLOSED.toString())) {
-					statusLst.add(AppConstants.ReqStatus.CLOSED);
-				} else if (status.equalsIgnoreCase(AppConstants.ReqStatus.EXPIRED.toString())) {
-					statusLst.add(AppConstants.ReqStatus.EXPIRED);
-				} else if (status.equalsIgnoreCase(AppConstants.ReqStatus.NEW.toString())) {
-					statusLst.add(AppConstants.ReqStatus.NEW);
-				} else if (status.equalsIgnoreCase(AppConstants.ReqStatus.OPEN.toString())) {
-					statusLst.add(AppConstants.ReqStatus.OPEN);
-				} else if (status.equalsIgnoreCase(AppConstants.ReqStatus.QUOTED.toString())) {
-					statusLst.add(AppConstants.ReqStatus.QUOTED);
-				}
+
+		for (String statusStr : status) {
+			if (statusStr.equalsIgnoreCase(AppConstants.ReqStatus.CLOSED.toString())) {
+				statusLst.add(AppConstants.ReqStatus.CLOSED);
+			} else if (statusStr.equalsIgnoreCase(AppConstants.ReqStatus.EXPIRED.toString())) {
+				statusLst.add(AppConstants.ReqStatus.EXPIRED);
+			} else if (statusStr.equalsIgnoreCase(AppConstants.ReqStatus.NEW.toString())) {
+				statusLst.add(AppConstants.ReqStatus.NEW);
+			} else if (statusStr.equalsIgnoreCase(AppConstants.ReqStatus.OPEN.toString())) {
+				statusLst.add(AppConstants.ReqStatus.OPEN);
+			} else if (statusStr.equalsIgnoreCase(AppConstants.ReqStatus.QUOTED.toString())) {
+				statusLst.add(AppConstants.ReqStatus.QUOTED);
 			}
-			if (!statusLst.isEmpty()) {
-				return reqRepository.findRequirementByclientAndStatusIn(
-						clientRepository.findById(Long.valueOf(cid)).get(), statusLst);
-			} else {
-				return new ArrayList<Requirement>();
-			}
+		}
+		if (!statusLst.isEmpty()) {
+			return reqRepository.findRequirementByclientAndStatusIn(clientRepository.findById(cid).get(), statusLst);
 		} else {
 			return new ArrayList<Requirement>();
 		}
@@ -188,21 +199,77 @@ public class RequirementController {
 
 		return ResponseEntity.ok().build();
 	}
-	
-	@GetMapping("/getOpenAndQuotedReq/{encryptedCID}")
-	public List<RequirementDto> getOpenAndQuotedReq(@PathVariable(value = "encryptedCID") String encryptedCID) throws Exception {
-		
+
+	@GetMapping("/getOpenAndQuotedReq/{webUniqueCode}")
+	public List<RequirementDto> getOpenAndQuotedReq(@PathVariable(value = "webUniqueCode") String webUniqueCode)
+			throws Exception {
+
 		List<RequirementDto> requirementList = null;
 		try {
-		requirementList  = requirementService.getRequirementList(encryptedCID);
-		} catch(WeHaulAPIServiceException ex) {
-			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND," Client Not Verified");
+			requirementList = requirementService.getRequirementList(URLDecoder.decode(webUniqueCode, "UTF-8"));
+		} catch (WeHaulAPIServiceException ex) {
+			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND, " Client Not Verified");
 		} catch (Exception e) {
 			throw new Exception("Exception Occured");
 		}
-	
-		return requirementList;	
+
+		return requirementList;
 	}
-	
-	
+
+	@GetMapping("/getOpenAndQuotedReq/{webUniqueCode}/{reqid}")
+	public RequirementDto getReqByWebUniqueCodeAndReqId(@PathVariable(value = "webUniqueCode") String webUniqueCode,
+			@PathVariable(value = "reqid") String reqid) throws Exception {
+
+		RequirementDto requirement = null;
+		try {
+			requirement = requirementService.getRequirement(URLDecoder.decode(webUniqueCode, "UTF-8"), reqid);
+		} catch (WeHaulAPIServiceException ex) {
+			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND, " Client Not Verified");
+		} catch (Exception e) {
+			throw new Exception("Exception Occured");
+		}
+
+		return requirement;
+	}
+
+	@PostMapping("/addquotes/{webUniqueCode}")
+	public int addQuotesToRequirement(@Valid @RequestBody RequirementDto reqdto,
+			@PathVariable(value = "webUniqueCode") String webUniqueCode) throws Exception {
+		int i = 0;
+		try {
+			i = requirementService.addQuotesToRequirement(reqdto, URLDecoder.decode(webUniqueCode, "UTF-8"));
+			if (i == 1) {
+				// get req by ID
+				Requirement req = reqRepository.findById(Long.parseLong(reqdto.getReqid())).orElseThrow(
+						() -> new ResourceNotFoundException("Requirement", "id", Long.parseLong(reqdto.getReqid())));
+				// update requirement status to QUOTED
+				req.setLastupdatedby("SYSTEM");
+				req.setStatus(AppConstants.ReqStatus.QUOTED);
+				req.setRetryAttempts(req.getRetryAttempts() + 1);
+				reqRepository.save(req);
+				logReqControler.info("req status updated from OPEN to QUOTED {}", req.toString());
+			}
+		} catch (WeHaulAPIServiceException ex) {
+			i = 0;
+			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND, " Client Not Verified");
+		} catch (Exception e) {
+			i = 0;
+			throw new Exception("Exception Occured");
+		}
+		return i;
+	}
+
+	@GetMapping("/getLatestQuotesByReqId/{reqid}")
+	public List<QuoteDto> getLatestQuotesByReqId(@PathVariable(value = "reqid") String reqid) throws Exception {
+
+		List<QuoteDto> latestQuotesLst = null;
+		try {
+			latestQuotesLst = requirementService.getLatestQuotesByReqId(reqid);
+		} catch (Exception e) {
+			throw new Exception("Exception Occured");
+		}
+
+		return latestQuotesLst;
+	}
+
 }

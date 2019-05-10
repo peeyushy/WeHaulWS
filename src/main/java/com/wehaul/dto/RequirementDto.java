@@ -3,6 +3,8 @@
  */
 package com.wehaul.dto;
 
+import java.time.LocalDateTime;
+
 /**
  * @author as.singh
  *
@@ -10,6 +12,7 @@ package com.wehaul.dto;
 public class RequirementDto {
 	
 	private String reqid;
+	private LocalDateTime reqdatetime;
 	private String reqComment;
 	private String reqdroploc;
 	private String reqpickuploc; 
@@ -38,6 +41,12 @@ public class RequirementDto {
 	}
 	public void setReqid(String reqid) {
 		this.reqid = reqid;
+	}	
+	public LocalDateTime getReqdatetime() {
+		return reqdatetime;
+	}
+	public void setReqdatetime(LocalDateTime reqdatetime) {
+		this.reqdatetime = reqdatetime;
 	}
 	public String getReqComment() {
 		return reqComment;
