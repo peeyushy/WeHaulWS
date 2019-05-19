@@ -12,6 +12,7 @@ public class QuoteDto {
 	private String qId;
 	private String qOwnerId;
 	private String qOwnerName;
+	private String qOwnerContactNo;
 	private String quote;
 	private String qComment;
 	private LocalDateTime qDatetime;
@@ -56,6 +57,20 @@ public class QuoteDto {
 	 */
 	public void setqOwnerName(String qOwnerName) {
 		this.qOwnerName = qOwnerName;
+	}	
+
+	/**
+	 * @return the qOwnerContactNo
+	 */
+	public String getqOwnerContactNo() {
+		return qOwnerContactNo;
+	}
+
+	/**
+	 * @param qOwnerContactNo the qOwnerContactNo to set
+	 */
+	public void setqOwnerContactNo(String qOwnerContactNo) {
+		this.qOwnerContactNo = qOwnerContactNo;
 	}
 
 	/**

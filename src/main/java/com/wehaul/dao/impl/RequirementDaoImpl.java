@@ -50,7 +50,7 @@ public class RequirementDaoImpl implements RequirementDao {
 	public final String INSERT_QUOTES = " insert into t_requirement_quotes (reqid, clientid, quote,comment)"
 			+ " values (:reqId, :clientId, :quote,:comment)";
 
-	public final String SELECT_ALL_QUOTES_FOR_REQ = " SELECT latestquotes.req_quote_id,c.clientid,c.clientname,latestquotes.quote,latestquotes.comment,latestquotes.createdat FROM "
+	public final String SELECT_ALL_QUOTES_FOR_REQ = " SELECT latestquotes.req_quote_id,c.clientid,c.clientname,c.contactno,latestquotes.quote,latestquotes.comment,latestquotes.createdat FROM "
 			+ " t_clients c, (SELECT t_requirement_quotes.* FROM (SELECT reqid, clientid, MAX(createdat) AS createdat FROM t_requirement_quotes GROUP BY reqid , clientid) AS latest_quotes "
 			+ " INNER JOIN t_requirement_quotes ON t_requirement_quotes.reqid = latest_quotes.reqid AND t_requirement_quotes.clientid = latest_quotes.clientid AND t_requirement_quotes.createdat = latest_quotes.createdat AND t_requirement_quotes.reqid = :reqid) latestquotes "
 			+ " WHERE c.clientid = latestquotes.clientid ORDER BY latestquotes.quote asc";
@@ -155,6 +155,7 @@ public class RequirementDaoImpl implements RequirementDao {
 				quote.setqId(rs.getString("req_quote_id"));
 				quote.setqOwnerId(rs.getString("clientid"));
 				quote.setqOwnerName(rs.getString("clientname"));
+				quote.setqOwnerContactNo(rs.getString("contactno"));
 				quote.setQuote(rs.getString("quote"));
 				quote.setqComment(rs.getString("comment"));
 				quote.setqDatetime(rs.getTimestamp("createdat").toLocalDateTime());
