@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
  */
 public class WeHaulAPIServiceException extends Exception {
 
+	private static final long serialVersionUID = -7682061838701156517L;
 	private int statusCode;
 	private String userMessage;
 
