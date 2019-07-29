@@ -2,9 +2,7 @@ package com.wehaul.controller;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -33,7 +31,6 @@ import com.wehaul.model.Requirement;
 import com.wehaul.repository.ClientRepository;
 import com.wehaul.repository.RequirementRepository;
 import com.wehaul.service.RequirementService;
-import com.wehaul.service.impl.RequirementServiceImpl;
 
 @RestController
 @RequestMapping("/wehaul/req")
@@ -102,6 +99,7 @@ public class RequirementController {
 
 	@PostMapping("/create")
 	public Requirement addReq(@Valid @RequestBody Requirement req) {
+		req.getReqDetails().setReq(req);
 		return reqRepository.save(req);
 	}
 
@@ -181,7 +179,9 @@ public class RequirementController {
 		req.setReqdatetime(reqDetails.getReqdatetime());
 		// req.setReqdatetimeflexi(reqDetails.isReqdatetimeflexi());
 		req.setReqdroploc(reqDetails.getReqdroploc());
+		//req.setReqdroplocid(reqDetails.getrgetReqdroplocid());
 		req.setReqpickuploc(reqDetails.getReqpickuploc());
+		//req.setReqpickuplocid(reqDetails.getReqpickuplocid());
 		// req.setReqpickupdropflexi(reqDetails.isReqpickupdropflexi());
 		req.setLtype(reqDetails.getLtype());
 		req.setVtype(reqDetails.getVtype());

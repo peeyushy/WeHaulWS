@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,6 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wehaul.constants.AppConstants;
 
 @Entity
@@ -43,14 +46,14 @@ public class Requirement implements Serializable {
 
 	@NotBlank
 	private String reqtype;
-	
+
 	@NotBlank
 	private String reqpickuploc;
 
 	@NotBlank
 	private String reqdroploc;
 
-	private boolean reqpickupdropflexi = true;	
+	private boolean reqpickupdropflexi = true;
 
 	@NotNull
 	private LocalDateTime reqdatetime;
@@ -62,23 +65,27 @@ public class Requirement implements Serializable {
 	private AppConstants.ReqStatus status;
 
 	private String comments;
-	
+
 	@OneToOne
 	@JoinColumn(name = "vtypeid")
 	private VehicleType vtype;
-	
+
 	@OneToOne
 	@JoinColumn(name = "ltypeid")
 	private LoadType ltype;
-	
+
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "clientid", referencedColumnName = "clientid")
 	@JsonBackReference
 	private Client client;
-	
+
 	@NotNull
-	private int retryAttempts=0;
+	private int retryAttempts = 0;
+
+	@OneToOne(mappedBy = "req", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
+	private RequirementDetails reqDetails;
 
 	@Column(nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -95,7 +102,7 @@ public class Requirement implements Serializable {
 
 	@NotBlank
 	private String lastupdatedby;
-	
+
 	public Requirement() {
 		super();
 	}
@@ -203,8 +210,6 @@ public class Requirement implements Serializable {
 		this.reqdatetimeflexi = reqdatetimeflexi;
 	}
 
-	
-
 	/**
 	 * @return the comments
 	 */
@@ -218,7 +223,7 @@ public class Requirement implements Serializable {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	
+
 	/**
 	 * @return the client
 	 */
@@ -231,6 +236,20 @@ public class Requirement implements Serializable {
 	 */
 	public void setClient(Client client) {
 		this.client = client;
+	}
+
+	/**
+	 * @return the reqDetails
+	 */
+	public RequirementDetails getReqDetails() {
+		return reqDetails;
+	}
+
+	/**
+	 * @param reqDetails the reqDetails to set
+	 */
+	public void setReqDetails(RequirementDetails reqDetails) {
+		this.reqDetails = reqDetails;
 	}
 
 	/**
@@ -329,7 +348,7 @@ public class Requirement implements Serializable {
 	 */
 	public void setLtype(LoadType ltype) {
 		this.ltype = ltype;
-	}	
+	}
 
 	public int getRetryAttempts() {
 		return retryAttempts;
@@ -339,6 +358,11 @@ public class Requirement implements Serializable {
 		this.retryAttempts = retryAttempts;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -350,6 +374,7 @@ public class Requirement implements Serializable {
 		result = prime * result + ((createdby == null) ? 0 : createdby.hashCode());
 		result = prime * result + ((lastupdatedby == null) ? 0 : lastupdatedby.hashCode());
 		result = prime * result + ((ltype == null) ? 0 : ltype.hashCode());
+		result = prime * result + ((reqDetails == null) ? 0 : reqDetails.hashCode());
 		result = prime * result + ((reqdatetime == null) ? 0 : reqdatetime.hashCode());
 		result = prime * result + (reqdatetimeflexi ? 1231 : 1237);
 		result = prime * result + ((reqdroploc == null) ? 0 : reqdroploc.hashCode());
@@ -363,6 +388,11 @@ public class Requirement implements Serializable {
 		return result;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -407,6 +437,11 @@ public class Requirement implements Serializable {
 				return false;
 		} else if (!ltype.equals(other.ltype))
 			return false;
+		if (reqDetails == null) {
+			if (other.reqDetails != null)
+				return false;
+		} else if (!reqDetails.equals(other.reqDetails))
+			return false;
 		if (reqdatetime == null) {
 			if (other.reqdatetime != null)
 				return false;
@@ -448,13 +483,19 @@ public class Requirement implements Serializable {
 		return true;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "Requirement [reqid=" + reqid + ", reqtype=" + reqtype + ", reqpickuploc=" + reqpickuploc
 				+ ", reqdroploc=" + reqdroploc + ", reqpickupdropflexi=" + reqpickupdropflexi + ", reqdatetime="
 				+ reqdatetime + ", reqdatetimeflexi=" + reqdatetimeflexi + ", status=" + status + ", comments="
 				+ comments + ", vtype=" + vtype + ", ltype=" + ltype + ", client=" + client + ", retryAttempts="
-				+ retryAttempts + ", CREATEDAT=" + CREATEDAT + ", UPDATEDAT=" + UPDATEDAT + ", createdby=" + createdby
-				+ ", lastupdatedby=" + lastupdatedby + "]";
-	}	
+				+ retryAttempts + ", reqDetails=" + reqDetails + ", CREATEDAT=" + CREATEDAT + ", UPDATEDAT=" + UPDATEDAT
+				+ ", createdby=" + createdby + ", lastupdatedby=" + lastupdatedby + "]";
+	}
+
 }
