@@ -90,7 +90,7 @@ public class RequirementServiceImpl implements RequirementService {
 	}
 
 	@Override
-	public RequirementDetails getRequirementDetails(Requirement req) {
+	public RequirementDetails getRequirementDetails(Requirement req) throws Exception {
 		RequirementDetails reqdetails = new RequirementDetails();
 		// pickup loc details
 		LocationDetails pickupLocDetails = hereApiService.getdetailsByLocationId(req.getReqpickuplocid());

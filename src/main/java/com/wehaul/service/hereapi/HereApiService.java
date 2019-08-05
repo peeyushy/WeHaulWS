@@ -29,7 +29,7 @@ public class HereApiService {
 	@Autowired
 	private RestTemplate restTemplate;
 
-	public LocationDetails getdetailsByLocationId(String locid) {
+	public LocationDetails getdetailsByLocationId(String locid) throws Exception {
 		String GEOCODER_URL = GEOCODER_BASE_URL + "?app_id=" + APP_ID + "&app_code=" + APP_CODE + "&locationid="
 				+ locid;
 		LocationDetails locDetails = new LocationDetails();

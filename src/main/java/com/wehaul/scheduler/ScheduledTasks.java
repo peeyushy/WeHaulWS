@@ -63,44 +63,53 @@ public class ScheduledTasks {
 		newReqStatusLst.add(AppConstants.ReqStatus.NEW);
 		try {
 			List<Requirement> reqLst = reqRepo.findRequirementBystatusIn(newReqStatusLst);
-			/* need to broadcast as soon as we have NEW requirement. */
+			/* Add requirement details & Update status to OPEN */
+			for (Requirement req : reqLst) {
+				try {
+					// get requirement details
+					RequirementDetails reqDetails = reqService.getRequirementDetails(req);
+					reqDeatilsRepo.save(reqDetails);
+					log.info("req details updated {}", reqDetails);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					log.error("Exception in getting Requirement details for {} , {}", req, ex);
+				} finally {
+					// update status always even when we had exception while getting details
+					req.setLastupdatedby("SYSTEM");
+					req.setStatus(AppConstants.ReqStatus.OPEN);
+					req.setRetryAttempts(req.getRetryAttempts() + 1);
+					reqRepo.save(req);
+					log.info("req updated form new to open {}", req);
+				}
+			}
+
+			/* Send email */
 			if (!reqLst.isEmpty() && EMAIL) {
 				// call the mail service or SMS service
 				List<Client> nonAdminClientsLst = clientRepo.findByclienttypeNot(ClientType.A);
 				for (Client client : nonAdminClientsLst) {
 					try {
 						if (client.getEmail().isEmpty()) {
-							log.info(" no email found for client " + client.getClientname());
+							log.info(" no email found for client {}", client.getClientname());
 						} else {
 							if (client.getWebuniquecode().isEmpty()) {
-								log.info(" Webuniquecode is empty, Not sending email for: " + client.getClientname());
+								log.info(" Webuniquecode is empty, Not sending email for: {}", client.getClientname());
 							} else {
 								emailUtils.sendMail(client.getEmail(), getMessageBody(client), EMAIL_SUBJECT);
-								log.info(" email sent to : " + client.getClientname() + ", email address: "
-										+ client.getEmail());
+								log.info(" email sent to : {} , email address: {}", client.getClientname(),
+										client.getEmail());
 							}
 						}
 					} catch (Exception ex) {
+						ex.printStackTrace();
 						log.error(" Exception in scheduler while sending emails to " + client.getClientname() + " : "
 								+ ex);
 					}
 				}
 			}
-			/* Update requirement status to OPEN */
-			for (Requirement req : reqLst) {
-				// get req details
-				RequirementDetails reqDetails = reqService.getRequirementDetails(req);
-				reqDeatilsRepo.save(reqDetails);
-				log.info("req deatils {}", reqDetails.toString());
-				// update status
-				req.setLastupdatedby("SYSTEM");
-				req.setStatus(AppConstants.ReqStatus.OPEN);
-				req.setRetryAttempts(req.getRetryAttempts() + 1);
-				reqRepo.save(req);
-				log.info("req open {}", req.toString());
-			}
 		} catch (Exception ex) {
-			log.info(" Exception occured in schedular " + ex);
+			ex.printStackTrace();
+			log.error(" Exception occured in schedular " + ex);
 		}
 	}
 
