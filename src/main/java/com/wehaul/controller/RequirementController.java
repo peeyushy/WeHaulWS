@@ -24,13 +24,16 @@ import com.wehaul.constants.AppConstants;
 import com.wehaul.constants.AppConstants.ReqStatus;
 import com.wehaul.dto.QuoteDto;
 import com.wehaul.dto.RequirementDto;
+import com.wehaul.dto.hereapi.LocationDetails;
 import com.wehaul.exception.ResourceNotFoundException;
 import com.wehaul.exception.WeHaulAPIServiceException;
 import com.wehaul.model.GetClient;
 import com.wehaul.model.Requirement;
+import com.wehaul.model.RequirementDetails;
 import com.wehaul.repository.ClientRepository;
 import com.wehaul.repository.RequirementRepository;
 import com.wehaul.service.RequirementService;
+import com.wehaul.service.hereapi.HereApiService;
 
 @RestController
 @RequestMapping("/wehaul/req")
@@ -99,7 +102,6 @@ public class RequirementController {
 
 	@PostMapping("/create")
 	public Requirement addReq(@Valid @RequestBody Requirement req) {
-		req.getReqDetails().setReq(req);
 		return reqRepository.save(req);
 	}
 
@@ -154,19 +156,6 @@ public class RequirementController {
 
 	}
 
-	/*
-	 * @GetMapping("/vehicleid/{vid}") public List<Load>
-	 * getLoadByVehicleid(@PathVariable(value = "vid") Long vid) { return
-	 * reqRepository.getLoadByVehicleId(vid); }
-	 */
-
-	/*
-	 * @PostMapping("/searchoptions") public List<Load>
-	 * getLoadBySearchOptions(@Valid @RequestBody LoadSearchOptionsDto
-	 * loadSearchOptionsDto) { return
-	 * reqRepository.getLoadBySearchOptions(loadSearchOptionsDto); }
-	 */
-
 	@PutMapping("/id/{id}")
 	public Requirement updateReq(@PathVariable(value = "id") Long reqid, @Valid @RequestBody Requirement reqDetails) {
 
@@ -179,9 +168,9 @@ public class RequirementController {
 		req.setReqdatetime(reqDetails.getReqdatetime());
 		// req.setReqdatetimeflexi(reqDetails.isReqdatetimeflexi());
 		req.setReqdroploc(reqDetails.getReqdroploc());
-		//req.setReqdroplocid(reqDetails.getrgetReqdroplocid());
+		// req.setReqdroplocid(reqDetails.getrgetReqdroplocid());
 		req.setReqpickuploc(reqDetails.getReqpickuploc());
-		//req.setReqpickuplocid(reqDetails.getReqpickuplocid());
+		// req.setReqpickuplocid(reqDetails.getReqpickuplocid());
 		// req.setReqpickupdropflexi(reqDetails.isReqpickupdropflexi());
 		req.setLtype(reqDetails.getLtype());
 		req.setVtype(reqDetails.getVtype());
@@ -208,8 +197,10 @@ public class RequirementController {
 		try {
 			requirementList = requirementService.getRequirementList(URLDecoder.decode(webUniqueCode, "UTF-8"));
 		} catch (WeHaulAPIServiceException ex) {
+			logReqControler.error("Got Client Not Verified for {}: {}",webUniqueCode,ex);
 			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND, " Client Not Verified");
 		} catch (Exception e) {
+			logReqControler.error("Exception while getting requirements list for client {}: {}",webUniqueCode,e);
 			throw new Exception("Exception Occured");
 		}
 
@@ -224,8 +215,10 @@ public class RequirementController {
 		try {
 			requirement = requirementService.getRequirement(URLDecoder.decode(webUniqueCode, "UTF-8"), reqid);
 		} catch (WeHaulAPIServiceException ex) {
+			logReqControler.error("Got Client Not Verified for {} and reqid {}: {}",webUniqueCode,reqid,ex);
 			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND, " Client Not Verified");
 		} catch (Exception e) {
+			logReqControler.error("Exception while getting requirements list for client {} and reqid {}: {}",webUniqueCode,e);
 			throw new Exception("Exception Occured");
 		}
 
@@ -238,6 +231,7 @@ public class RequirementController {
 		int i = 0;
 		try {
 			i = requirementService.addQuotesToRequirement(reqdto, URLDecoder.decode(webUniqueCode, "UTF-8"));
+			logReqControler.info("addQuotesToRequirement i {}", i);
 			if (i == 1) {
 				// get req by ID
 				Requirement req = reqRepository.findById(Long.parseLong(reqdto.getReqid())).orElseThrow(
@@ -251,9 +245,11 @@ public class RequirementController {
 			}
 		} catch (WeHaulAPIServiceException ex) {
 			i = 0;
+			logReqControler.error("WeHaulAPIServiceException {} ", ex);
 			throw new WeHaulAPIServiceException(HttpServletResponse.SC_NOT_FOUND, " Client Not Verified");
 		} catch (Exception e) {
 			i = 0;
+			logReqControler.error("Exception {} ", e);
 			throw new Exception("Exception Occured");
 		}
 		return i;
@@ -271,5 +267,7 @@ public class RequirementController {
 
 		return latestQuotesLst;
 	}
+
+	
 
 }

@@ -19,8 +19,11 @@ import com.wehaul.constants.AppConstants;
 import com.wehaul.constants.AppConstants.ClientType;
 import com.wehaul.model.Client;
 import com.wehaul.model.Requirement;
+import com.wehaul.model.RequirementDetails;
 import com.wehaul.repository.ClientRepository;
+import com.wehaul.repository.RequirementDetailsRepository;
 import com.wehaul.repository.RequirementRepository;
+import com.wehaul.service.RequirementService;
 import com.wehaul.util.EMailUtils;
 
 @Component
@@ -28,6 +31,12 @@ public class ScheduledTasks {
 
 	@Autowired
 	RequirementRepository reqRepo;
+
+	@Autowired
+	RequirementDetailsRepository reqDeatilsRepo;
+
+	@Autowired
+	RequirementService reqService;
 
 	@Autowired
 	ClientRepository clientRepo;
@@ -44,6 +53,9 @@ public class ScheduledTasks {
 	@Value("${weblinkbaseurl}")
 	private String WEBLINK_BASE_URL;
 
+	@Value("${email}")
+	private boolean EMAIL;
+
 	@Scheduled(cron = "${cron.expression.outmessage}")
 	public void sendMessages() {
 		log.info("The time is now to sendMessages {}", dateFormat.format(new Date()));
@@ -52,7 +64,7 @@ public class ScheduledTasks {
 		try {
 			List<Requirement> reqLst = reqRepo.findRequirementBystatusIn(newReqStatusLst);
 			/* need to broadcast as soon as we have NEW requirement. */
-			if (!reqLst.isEmpty()) {
+			if (!reqLst.isEmpty() && EMAIL) {
 				// call the mail service or SMS service
 				List<Client> nonAdminClientsLst = clientRepo.findByclienttypeNot(ClientType.A);
 				for (Client client : nonAdminClientsLst) {
@@ -76,6 +88,11 @@ public class ScheduledTasks {
 			}
 			/* Update requirement status to OPEN */
 			for (Requirement req : reqLst) {
+				// get req details
+				RequirementDetails reqDetails = reqService.getRequirementDetails(req);
+				reqDeatilsRepo.save(reqDetails);
+				log.info("req deatils {}", reqDetails.toString());
+				// update status
 				req.setLastupdatedby("SYSTEM");
 				req.setStatus(AppConstants.ReqStatus.OPEN);
 				req.setRetryAttempts(req.getRetryAttempts() + 1);

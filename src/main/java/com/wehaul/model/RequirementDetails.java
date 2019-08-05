@@ -2,16 +2,13 @@ package com.wehaul.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.MapsId;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "T_REQUIREMENTS_DETAIL")
@@ -20,16 +17,13 @@ public class RequirementDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "reqid")
-	private Long reqid;
+	@GeneratedValue
+	private Long id;
 
 	@OneToOne
-	@MapsId
-	@JsonBackReference
+	@JoinColumn(name = "reqid", unique = true)
 	private Requirement req;
 
-	@NotBlank
-	private String pickuplocid;
 	@NotNull
 	private double pickuplat;
 	@NotNull
@@ -46,8 +40,7 @@ public class RequirementDetails implements Serializable {
 	private String pickupstate;
 
 	private String pickupcountry;
-	@NotBlank
-	private String droplocid;
+
 	@NotNull
 	private double droplat;
 	@NotNull
@@ -69,19 +62,22 @@ public class RequirementDetails implements Serializable {
 		super();
 	}
 
+	
 	/**
-	 * @return the reqid
+	 * @return the id
 	 */
-	public Long getReqid() {
-		return reqid;
+	public Long getId() {
+		return id;
 	}
 
+
 	/**
-	 * @param reqid the reqid to set
+	 * @param id the id to set
 	 */
-	public void setReqid(Long reqid) {
-		this.reqid = reqid;
+	public void setId(Long id) {
+		this.id = id;
 	}
+
 
 	/**
 	 * @return the req
@@ -95,20 +91,6 @@ public class RequirementDetails implements Serializable {
 	 */
 	public void setReq(Requirement req) {
 		this.req = req;
-	}
-
-	/**
-	 * @return the pickuplocid
-	 */
-	public String getPickuplocid() {
-		return pickuplocid;
-	}
-
-	/**
-	 * @param pickuplocid the pickuplocid to set
-	 */
-	public void setPickuplocid(String pickuplocid) {
-		this.pickuplocid = pickuplocid;
 	}
 
 	/**
@@ -224,20 +206,6 @@ public class RequirementDetails implements Serializable {
 	}
 
 	/**
-	 * @return the droplocid
-	 */
-	public String getDroplocid() {
-		return droplocid;
-	}
-
-	/**
-	 * @param droplocid the droplocid to set
-	 */
-	public void setDroplocid(String droplocid) {
-		this.droplocid = droplocid;
-	}
-
-	/**
 	 * @return the droplat
 	 */
 	public double getDroplat() {
@@ -349,9 +317,8 @@ public class RequirementDetails implements Serializable {
 		this.dropcountry = dropcountry;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+
+	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -365,30 +332,27 @@ public class RequirementDetails implements Serializable {
 		long temp;
 		temp = Double.doubleToLongBits(droplat);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((droplocid == null) ? 0 : droplocid.hashCode());
 		temp = Double.doubleToLongBits(droplong);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((droppostcode == null) ? 0 : droppostcode.hashCode());
 		result = prime * result + ((dropstate == null) ? 0 : dropstate.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((pickupaddresslable == null) ? 0 : pickupaddresslable.hashCode());
 		result = prime * result + ((pickupcity == null) ? 0 : pickupcity.hashCode());
 		result = prime * result + ((pickupcountry == null) ? 0 : pickupcountry.hashCode());
 		result = prime * result + ((pickupcounty == null) ? 0 : pickupcounty.hashCode());
 		temp = Double.doubleToLongBits(pickuplat);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((pickuplocid == null) ? 0 : pickuplocid.hashCode());
 		temp = Double.doubleToLongBits(pickuplong);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((pickuppostcode == null) ? 0 : pickuppostcode.hashCode());
 		result = prime * result + ((pickupstate == null) ? 0 : pickupstate.hashCode());
 		result = prime * result + ((req == null) ? 0 : req.hashCode());
-		result = prime * result + ((reqid == null) ? 0 : reqid.hashCode());
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+
+	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -422,11 +386,6 @@ public class RequirementDetails implements Serializable {
 			return false;
 		if (Double.doubleToLongBits(droplat) != Double.doubleToLongBits(other.droplat))
 			return false;
-		if (droplocid == null) {
-			if (other.droplocid != null)
-				return false;
-		} else if (!droplocid.equals(other.droplocid))
-			return false;
 		if (Double.doubleToLongBits(droplong) != Double.doubleToLongBits(other.droplong))
 			return false;
 		if (droppostcode == null) {
@@ -438,6 +397,11 @@ public class RequirementDetails implements Serializable {
 			if (other.dropstate != null)
 				return false;
 		} else if (!dropstate.equals(other.dropstate))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
 			return false;
 		if (pickupaddresslable == null) {
 			if (other.pickupaddresslable != null)
@@ -461,11 +425,6 @@ public class RequirementDetails implements Serializable {
 			return false;
 		if (Double.doubleToLongBits(pickuplat) != Double.doubleToLongBits(other.pickuplat))
 			return false;
-		if (pickuplocid == null) {
-			if (other.pickuplocid != null)
-				return false;
-		} else if (!pickuplocid.equals(other.pickuplocid))
-			return false;
 		if (Double.doubleToLongBits(pickuplong) != Double.doubleToLongBits(other.pickuplong))
 			return false;
 		if (pickuppostcode == null) {
@@ -483,27 +442,20 @@ public class RequirementDetails implements Serializable {
 				return false;
 		} else if (!req.equals(other.req))
 			return false;
-		if (reqid == null) {
-			if (other.reqid != null)
-				return false;
-		} else if (!reqid.equals(other.reqid))
-			return false;
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "RequirementDetails [reqid=" + reqid + ", req=" + req + ", pickuplocid=" + pickuplocid + ", pickuplat="
-				+ pickuplat + ", pickuplong=" + pickuplong + ", pickupaddresslable=" + pickupaddresslable
-				+ ", pickuppostcode=" + pickuppostcode + ", pickupcity=" + pickupcity + ", pickupcounty=" + pickupcounty
-				+ ", pickupstate=" + pickupstate + ", pickupcountry=" + pickupcountry + ", droplocid=" + droplocid
-				+ ", droplat=" + droplat + ", droplong=" + droplong + ", dropaddresslable=" + dropaddresslable
-				+ ", droppostcode=" + droppostcode + ", dropcity=" + dropcity + ", dropcounty=" + dropcounty
-				+ ", dropstate=" + dropstate + ", dropcountry=" + dropcountry + "]";
+		return "RequirementDetails [id=" + id + ", req=" + req + ", pickuplat=" + pickuplat + ", pickuplong="
+				+ pickuplong + ", pickupaddresslable=" + pickupaddresslable + ", pickuppostcode=" + pickuppostcode
+				+ ", pickupcity=" + pickupcity + ", pickupcounty=" + pickupcounty + ", pickupstate=" + pickupstate
+				+ ", pickupcountry=" + pickupcountry + ", droplat=" + droplat + ", droplong=" + droplong
+				+ ", dropaddresslable=" + dropaddresslable + ", droppostcode=" + droppostcode + ", dropcity=" + dropcity
+				+ ", dropcounty=" + dropcounty + ", dropstate=" + dropstate + ", dropcountry=" + dropcountry + "]";
 	}
 }
